@@ -48,7 +48,7 @@ public abstract class VersionChecker {
     public String checkForUpdate(String currentVersion, boolean checkForPreReleases) {
         String check = isUpdateAvailable(currentVersion, checkForPreReleases);
         String noUpdateMessage = "No updates available.";
-        String updateMessage = "A new release is available:";
+        String updateMessage = "A new release is available: ";
 
         if (checkForPreReleases) {
             noUpdateMessage = noUpdateMessage + " No PreReleases available.";
