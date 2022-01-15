@@ -92,11 +92,28 @@ public abstract class VersionChecker {
      * <code>false</code>.
      */
     private boolean isNewSemanticVersion(String currentVersion, String newVersion) {
-        if (Integer.parseInt(newVersion.substring(0,1)) > Integer.parseInt(currentVersion.substring(0,1))) {
+
+        int newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch;
+
+        newMajor = Integer.parseInt(newVersion.substring(0,1));
+        newMinor = Integer.parseInt(newVersion.substring(2,3));
+        newPatch = Integer.parseInt(newVersion.substring(4,5));
+
+        currentMajor = Integer.parseInt(currentVersion.substring(0,1));
+        currentMinor = Integer.parseInt(currentVersion.substring(2,3));
+        currentPatch = Integer.parseInt(currentVersion.substring(4,5));
+
+        if (newMajor > currentMajor && newMinor >= currentMinor && newPatch >= currentPatch) {
+            // new major update
             return true;
-        } else if (Integer.parseInt(newVersion.substring(2,3)) > Integer.parseInt(currentVersion.substring(2,3))) {
+
+        } else if (newMajor >= currentMajor && newMinor > currentMinor && newPatch >= currentPatch) {
+            // new minor update
             return true;
-        } else return Integer.parseInt(newVersion.substring(4,5)) > Integer.parseInt(currentVersion.substring(4,5));
+
+            // new patch update if true
+        } else
+            return newMajor >= currentMajor && newMinor >= currentMinor && newPatch > currentPatch;
     }
 
     /**

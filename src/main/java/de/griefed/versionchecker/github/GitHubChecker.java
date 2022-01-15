@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import de.griefed.versionchecker.VersionChecker;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
@@ -83,7 +84,7 @@ public class GitHubChecker extends VersionChecker {
                     versions.add(version.get("tag_name").asText());
                 }
             }
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | HttpClientErrorException e) {
             e.printStackTrace();
             versions = null;
         }
@@ -109,7 +110,7 @@ public class GitHubChecker extends VersionChecker {
 
             latest = getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITHUB_API_LATEST, String.class).getBody()).get("tag_name").asText();
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | HttpClientErrorException e) {
 
             e.printStackTrace();
             latest = "no_release";
@@ -133,7 +134,7 @@ public class GitHubChecker extends VersionChecker {
                     return tag.get("html_url").asText();
                 }
             }
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | HttpClientErrorException e) {
             e.printStackTrace();
         }
         return "No URL found.";
@@ -161,7 +162,7 @@ public class GitHubChecker extends VersionChecker {
                 }
 
             }
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | HttpClientErrorException e) {
             e.printStackTrace();
         }
 
