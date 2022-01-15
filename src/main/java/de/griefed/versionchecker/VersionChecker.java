@@ -23,12 +23,20 @@
  */
 package de.griefed.versionchecker;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Baseclass from wich GitHub and GitLab checks extend. This class mainly provides the logic for comparing versions against
+ * each other to find out which is newer.
+ * @author Griefed
+ */
 public abstract class VersionChecker {
 
     private List<String> allVersions;
@@ -45,7 +53,7 @@ public abstract class VersionChecker {
      * New release available: <code>Current version: 2.0.0. A new release is available: 2.1.1. Download available at: https://github.com/Griefed/ServerPackCreator/releases/tag/2.1.1</code>
      * New prerelease available: <code>Current version: 2.0.0. A new PreRelease is available: 3.0.0-alpha.14. Download available at: https://github.com/Griefed/ServerPackCreator/releases/tag/3.0.0-alpha.14</code>
      */
-    public String checkForUpdate(String currentVersion, boolean checkForPreReleases) {
+    public String checkForUpdate(String currentVersion, boolean checkForPreReleases) throws JsonProcessingException, HttpClientErrorException {
         String check = isUpdateAvailable(currentVersion, checkForPreReleases);
         String noUpdateMessage = "No updates available.";
         String updateMessage = "A new release is available: ";
@@ -306,6 +314,8 @@ public abstract class VersionChecker {
     protected abstract String latestVersion();
 
     protected abstract String getDownloadUrl(String version);
+
+    protected abstract void setRepository() throws JsonProcessingException, HttpClientErrorException;
 
     public abstract List<String> getAssetsDownloadUrls(String version);
 

@@ -53,6 +53,8 @@ public class GitLabChecker extends VersionChecker {
             .setReadTimeout(Duration.ofSeconds(5))
             .build();
 
+    private JsonNode repository;
+
     /**
      * Constructor for the GitLab checker. Requires the username <code>gitLabBaseUrl</code> from which the repository with
      * the given <code>id</code> will make up the URL called for checks.
@@ -62,6 +64,12 @@ public class GitLabChecker extends VersionChecker {
      */
     public GitLabChecker(String gitLabBaseUrl, int id) {
         this.GITLAB_API = gitLabBaseUrl + "/api/v4/projects/" + id + "/releases";
+        try {
+            setRepository();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            this.repository = null;
+        }
         setAllVersions();
     }
 
@@ -75,16 +83,13 @@ public class GitLabChecker extends VersionChecker {
     public List<String> allVersions() {
         List<String> versions = new ArrayList<>(1000);
 
-        try {
+        if (repository != null) {
             // Store all available versions in a list
-            for (JsonNode version : getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITLAB_API, String.class).getBody())) {
+            for (JsonNode version : repository) {
                 if (!versions.contains(version.get("tag_name").asText())) {
                     versions.add(version.get("tag_name").asText());
                 }
             }
-        } catch (JsonProcessingException | HttpClientErrorException e) {
-            e.printStackTrace();
-            versions = null;
         }
 
         // In case the given repository does not have any releases
@@ -120,16 +125,20 @@ public class GitLabChecker extends VersionChecker {
      */
     @Override
     public String getDownloadUrl(String version) {
-        try {
-            for (JsonNode tag : getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITLAB_API, String.class).getBody())) {
+        if (repository != null) {
+            for (JsonNode tag : repository) {
                 if (tag.get("tag_name").asText().equals(version)) {
                     return tag.get("_links").get("self").asText();
                 }
             }
-        } catch (JsonProcessingException | HttpClientErrorException e) {
-            e.printStackTrace();
         }
+
         return "No URL found.";
+    }
+
+    @Override
+    protected void setRepository() throws JsonProcessingException, HttpClientErrorException {
+        this.repository = getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITLAB_API, String.class).getBody());
     }
 
     /**
@@ -143,19 +152,22 @@ public class GitLabChecker extends VersionChecker {
 
         List<String> assetUrls = new ArrayList<>(20);
 
-        try {
-            for (JsonNode version : getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITLAB_API, String.class).getBody())) {
+        if (repository != null) {
+            for (JsonNode version : repository) {
+
                 if (version.get("tag_name").asText().equals(requestedVersion)) {
-                    //assetUrls.contains(asset.get("url").asText());
+
                     for (JsonNode asset : version.get("assets").get("links")) {
+
                         if (!assetUrls.contains(asset.get("url").asText())) {
                             assetUrls.add(asset.get("url").asText());
                         }
+
                     }
+
                 }
+
             }
-        } catch (JsonProcessingException | HttpClientErrorException e) {
-            e.printStackTrace();
         }
 
         return assetUrls;

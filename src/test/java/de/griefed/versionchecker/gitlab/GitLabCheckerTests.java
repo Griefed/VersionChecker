@@ -1,5 +1,6 @@
 package de.griefed.versionchecker.gitlab;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -7,10 +8,10 @@ import java.util.List;
 
 public class GitLabCheckerTests {
 
-    GitLabChecker gitLabChecker = new GitLabChecker("https://git.griefed.de", 63);
+    private final GitLabChecker gitLabChecker = new GitLabChecker("https://git.griefed.de", 63);
 
     @Test
-    void checkForNewUpdate() {
+    void checkForNewUpdate() throws JsonProcessingException {
         Assertions.assertNotEquals(
                 "2.0.0",
                 gitLabChecker.checkForUpdate("2.0.0", false)
@@ -22,7 +23,7 @@ public class GitLabCheckerTests {
     }
 
     @Test
-    void checkForNewAlpha() {
+    void checkForNewAlpha() throws JsonProcessingException {
         Assertions.assertNotEquals(
                 "2.0.0",
                 gitLabChecker.checkForUpdate("2.0.0", true)
