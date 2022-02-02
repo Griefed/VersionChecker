@@ -23,14 +23,15 @@
  */
 package de.griefed.versionchecker.gitlab;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
 import de.griefed.versionchecker.VersionChecker;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.time.Duration;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,29 +48,28 @@ import java.util.List;
  */
 public class GitLabChecker extends VersionChecker {
 
-    private final String GITLAB_API;
-    private final RestTemplate REST_TEMPLATE = new RestTemplateBuilder()
-            .setConnectTimeout(Duration.ofSeconds(5))
-            .setReadTimeout(Duration.ofSeconds(5))
-            .build();
+    private static final Logger LOG = LogManager.getLogger(GitLabChecker.class);
+
+    private final URL GITLAB_API;
 
     private JsonNode repository;
 
     /**
-     * Constructor for the GitLab checker. Requires the username <code>gitLabBaseUrl</code> from which the repository with
-     * the given <code>id</code> will make up the URL called for checks.
+     * Constructor for the GitLab checker. Checks the given GitLab repositories version and tries to acquire the latest version,
+     * if available.
      * @author Griefed
-     * @param gitLabBaseUrl String. The base URL of the GitLab instance on which you want to check a repository.
-     * @param id Int. The id of the project you want to check the releases for.
+     * @param repositoryUrl String. The full /api/v4-GitLab-repository-URL you want to check. Examples:<br>
+     *                   <code>https://gitlab.com/api/v4/projects/32677538/releases</code><br>
+     *                   <code>https://git.griefed.de/api/v4/projects/63/releases</code>
+     * @throws MalformedURLException Thrown if the resulting URL is malformed or otherwise invalid.
      */
-    public GitLabChecker(String gitLabBaseUrl, int id) {
-        this.GITLAB_API = gitLabBaseUrl + "/api/v4/projects/" + id + "/releases";
-        try {
-            setRepository();
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            this.repository = null;
-        }
+    public GitLabChecker(@NotNull String repositoryUrl) throws MalformedURLException {
+        this.GITLAB_API = new URL(repositoryUrl);
+    }
+
+    @Override
+    public void refresh() throws IOException  {
+        setRepository();
         setAllVersions();
     }
 
@@ -92,6 +92,8 @@ public class GitLabChecker extends VersionChecker {
             }
         }
 
+        LOG.debug("All versions: " + versions);
+
         // In case the given repository does not have any releases
         if (versions == null || versions.size() == 0) {
             return null;
@@ -103,15 +105,23 @@ public class GitLabChecker extends VersionChecker {
     /**
      * Get the latest regular release.
      * @author Griefed
+     * @param checkForPreRelease Boolean. Whether to include alpha and beta releases for latest release versions.
      * @return String. Returns the latest regular release. If no regular release is available, <code>no_release</code> is returned.
      */
     @Override
-    public String latestVersion() {
+    public String latestVersion(boolean checkForPreRelease) {
 
         for (String version : getAllVersions()) {
+            LOG.debug("version: " + version);
             if (!version.contains("alpha") && !version.contains("beta")) {
                 return version;
             }
+        }
+
+        if (checkForPreRelease) {
+            if (!latestBeta().equals("no_betas")) return latestBeta();
+
+            if (!latestAlpha().equals("no_alphas")) return latestAlpha();
         }
 
         return "no_release";
@@ -124,7 +134,7 @@ public class GitLabChecker extends VersionChecker {
      * @return String. Returns the URL to the given release version.
      */
     @Override
-    public String getDownloadUrl(String version) {
+    public String getDownloadUrl(@NotNull String version) {
         if (repository != null) {
             for (JsonNode tag : repository) {
                 if (tag.get("tag_name").asText().equals(version)) {
@@ -136,9 +146,15 @@ public class GitLabChecker extends VersionChecker {
         return "No URL found.";
     }
 
+    /**
+     * Set the repository JsonNode, for the given <code>GITLAB_API</code>-URL this GitLabChecker-instance was initialized
+     * with, so we can retrieve information from it later on.
+     * @author Griefed
+     * @throws IOException Thrown if the set repository can not be reached or the URL is malformed in any way.
+     */
     @Override
-    protected void setRepository() throws JsonProcessingException, HttpClientErrorException {
-        this.repository = getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITLAB_API, String.class).getBody());
+    protected void setRepository() throws IOException {
+        this.repository = getObjectMapper().readTree(getResponse(GITLAB_API));
     }
 
     /**
@@ -148,7 +164,7 @@ public class GitLabChecker extends VersionChecker {
      * @return List String. A list of download URLs for the assets of the given tag/version.
      */
     @Override
-    public List<String> getAssetsDownloadUrls(String requestedVersion) {
+    public List<String> getAssetsDownloadUrls(@NotNull String requestedVersion) {
 
         List<String> assetUrls = new ArrayList<>(20);
 

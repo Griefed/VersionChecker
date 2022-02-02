@@ -23,14 +23,15 @@
  */
 package de.griefed.versionchecker.github;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.jetbrains.annotations.NotNull;
 import de.griefed.versionchecker.VersionChecker;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.time.Duration;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,38 +48,29 @@ import java.util.List;
  */
 public class GitHubChecker extends VersionChecker {
 
-    private final String GITHUB_API;
-    private final String GITHUB_API_LATEST;
-    private final RestTemplate REST_TEMPLATE = new RestTemplateBuilder()
-            .setConnectTimeout(Duration.ofSeconds(5))
-            .setReadTimeout(Duration.ofSeconds(5))
-            .build();
+    private static final Logger LOG = LogManager.getLogger(GitHubChecker.class);
+
+    private final URL GITHUB_API;
+    private final URL GITHUB_API_LATEST;
 
     private JsonNode repository;
     private JsonNode latest;
 
     /**
-     * Constructor for the GitHub checker. Requires the username <code>user</code> for which the given repository
-     * <code>repository</code> will make up the URL called for checks.
+     * Constructor for the GitHub checker. Checks a given GitHub repositories versions and latest version, if available.
      * @author Griefed
-     * @param user String. The GitHub username who the repository belongs to.
-     * @param repository String. The GitHub repository owned by <code>user</code>.
+     * @param gitHubUserRepository String. GitHub user/repository combination. For example <code>Griefed/ServerPackCreator</code>
+     * @throws MalformedURLException Thrown if the resulting URL is malformed or otherwise invalid.
      */
-    public GitHubChecker(String user, String repository) {
-        this.GITHUB_API = "https://api.github.com/repos/" + user + "/" + repository + "/releases";
-        this.GITHUB_API_LATEST = "https://api.github.com/repos/" + user + "/" + repository + "/releases/latest";
-        try {
-            setRepository();
-        } catch (JsonProcessingException | HttpClientErrorException e) {
-            e.printStackTrace();
-            this.repository = null;
-        }
-        try {
-            setLatest();
-        } catch (JsonProcessingException | HttpClientErrorException e) {
-            e.printStackTrace();
-            this.latest = null;
-        }
+    public GitHubChecker(@NotNull String gitHubUserRepository) throws MalformedURLException {
+        this.GITHUB_API = new URL("https://api.github.com/repos/" + gitHubUserRepository + "/releases");
+        this.GITHUB_API_LATEST = new URL("https://api.github.com/repos/" + gitHubUserRepository + "/releases/latest");
+    }
+
+    @Override
+    public void refresh() throws IOException {
+        setRepository();
+        setLatest();
         setAllVersions();
     }
 
@@ -101,6 +93,8 @@ public class GitHubChecker extends VersionChecker {
             }
         }
 
+        LOG.debug("All versions: " + versions);
+
         // In case the given repository does not have any releases
         if (versions == null || versions.size() == 0) {
             return null;
@@ -112,14 +106,23 @@ public class GitHubChecker extends VersionChecker {
     /**
      * Get the latest regular release.
      * @author Griefed
+     * @param checkForPreRelease Boolean. Whether to include alpha and beta releases for latest release versions.
      * @return String. Returns the latest regular release. If no regular release is available, <code>no_release</code> is returned.
      */
     @Override
-    public String latestVersion() {
+    public String latestVersion(boolean checkForPreRelease) {
         if (latest != null) {
+            LOG.debug("Latest version:" + latest);
             return latest.get("tag_name").asText();
         }
-        return null;
+
+        if (checkForPreRelease) {
+            if (!latestBeta().equals("no_betas")) return latestBeta();
+
+            if (!latestAlpha().equals("no_alphas")) return latestAlpha();
+        }
+
+        return "no_release";
 
     }
 
@@ -130,7 +133,7 @@ public class GitHubChecker extends VersionChecker {
      * @return String. Returns the URL to the given release version.
      */
     @Override
-    public String getDownloadUrl(String version) {
+    public String getDownloadUrl(@NotNull String version) {
 
         if (repository != null) {
             for (JsonNode tag : repository) {
@@ -144,13 +147,13 @@ public class GitHubChecker extends VersionChecker {
     }
 
     @Override
-    protected void setRepository() throws JsonProcessingException, HttpClientErrorException {
-        this.repository = getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITHUB_API, String.class).getBody());
+    protected void setRepository() throws IOException {
+        this.repository = getObjectMapper().readTree(getResponse(GITHUB_API));
 
     }
 
-    private void setLatest() throws JsonProcessingException, HttpClientErrorException {
-        this.latest = getObjectMapper().readTree(REST_TEMPLATE.getForEntity(GITHUB_API_LATEST, String.class).getBody());
+    private void setLatest() throws IOException {
+        this.latest = getObjectMapper().readTree(getResponse(GITHUB_API_LATEST));
     }
 
     /**
@@ -160,7 +163,7 @@ public class GitHubChecker extends VersionChecker {
      * @return List String. A list of download URLs for the assets of the given tag/version.
      */
     @Override
-    public List<String> getAssetsDownloadUrls(String requestedVersion) {
+    public List<String> getAssetsDownloadUrls(@NotNull String requestedVersion) {
 
         List<String> assetUrls = new ArrayList<>(20);
 

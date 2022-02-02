@@ -1,0 +1,308 @@
+stages:
+  - Tests
+  - Documentation
+  - Release
+  - Build Release
+
+variables:
+  project_name: "$CI_PROJECT_NAME"
+  SEMANTIC_RELEASE_PACKAGE: "$CI_PROJECT_NAME"
+  SECURE_ANALYZERS_PREFIX: "registry.gitlab.com/gitlab-org/security-products/analyzers"
+  SAST_EXCLUDED_ANALYZERS: ""
+  SAST_EXCLUDED_PATHS: "spec, test, tests, tmp"
+  SCAN_KUBERNETES_MANIFESTS: "false"
+  SECRETS_ANALYZER_VERSION: "3"
+  SECRET_DETECTION_EXCLUDED_PATHS: ""
+
+services:
+  - name: griefed/gitlab-ci-cd:2.0.0
+    alias: docker
+
+sast:
+  stage: Tests
+  artifacts:
+    reports:
+      sast: gl-sast-report.json
+  rules:
+    - when: never
+  variables:
+    SEARCH_MAX_DEPTH: 4
+  script:
+    - echo "$CI_JOB_NAME is used for configuration only, and its script should not be executed"
+    - exit 1
+
+.sast-analyzer:
+  extends: sast
+  allow_failure: true
+  # `rules` must be overridden explicitly by each child job
+  # see https://gitlab.com/gitlab-org/gitlab/-/issues/218444
+  script:
+    - /analyzer run
+
+eslint-sast:
+  extends: .sast-analyzer
+  image:
+    name: "$SAST_ANALYZER_IMAGE"
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: 2
+    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/eslint:$SAST_ANALYZER_IMAGE_TAG"
+  rules:
+    - if: $SAST_DISABLED
+      when: never
+    - if: $SAST_EXCLUDED_ANALYZERS =~ /eslint/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - '**/*.html'
+        - '**/*.js'
+        - '**/*.jsx'
+        - '**/*.ts'
+        - '**/*.tsx'
+
+nodejs-scan-sast:
+  extends: .sast-analyzer
+  image:
+    name: "$SAST_ANALYZER_IMAGE"
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: 2
+    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/nodejs-scan:$SAST_ANALYZER_IMAGE_TAG"
+  rules:
+    - if: $SAST_DISABLED
+      when: never
+    - if: $SAST_EXCLUDED_ANALYZERS =~ /nodejs-scan/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - '**/package.json'
+
+semgrep-sast:
+  extends: .sast-analyzer
+  image:
+    name: "$SAST_ANALYZER_IMAGE"
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: 2
+    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/semgrep:$SAST_ANALYZER_IMAGE_TAG"
+  rules:
+    - if: $SAST_DISABLED
+      when: never
+    - if: $SAST_EXCLUDED_ANALYZERS =~ /semgrep/
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - '**/*.py'
+        - '**/*.js'
+        - '**/*.jsx'
+        - '**/*.ts'
+        - '**/*.tsx'
+        - '**/*.c'
+        - '**/*.go'
+
+.secret-analyzer:
+  stage: Tests
+  image: "$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION"
+  services: []
+  allow_failure: true
+  # `rules` must be overridden explicitly by each child job
+  # see https://gitlab.com/gitlab-org/gitlab/-/issues/218444
+  artifacts:
+    reports:
+      secret_detection: gl-secret-detection-report.json
+
+secret_detection:
+  extends: .secret-analyzer
+  rules:
+    - if: $SECRET_DETECTION_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH
+  script:
+    - if [ -n "$CI_COMMIT_TAG" ]; then echo "Skipping Secret Detection for tags. No code changes have occurred."; exit 0; fi
+    - if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then echo "Running Secret Detection on default branch."; /analyzer run; exit 0; fi
+    - git fetch origin $CI_DEFAULT_BRANCH $CI_COMMIT_REF_NAME
+    - git log --left-right --cherry-pick --pretty=format:"%H" refs/remotes/origin/$CI_DEFAULT_BRANCH...refs/remotes/origin/$CI_COMMIT_REF_NAME > "$CI_COMMIT_SHA"_commit_list.txt
+    - export SECRET_DETECTION_COMMITS_FILE="$CI_COMMIT_SHA"_commit_list.txt
+    - /analyzer run
+    - rm "$CI_COMMIT_SHA"_commit_list.txt
+
+Gradle Test:
+  stage: Tests
+  image: griefed/baseimage-ubuntu-jdk-8:2.0.2
+  before_script:
+    - echo "**** Running in $CI_JOB_ID ****"
+    - echo "**** Java location ****"
+    - which java
+    - echo "**** Java version ****"
+    - java -version
+    - echo "**** Allowing execution of gradlew ****"
+    - chmod +x gradlew
+    - echo "**** Ensure clean environment ****"
+    - "./gradlew clean"
+  script:
+    - echo "**** Building ServerPackCreator ****"
+    - "./gradlew build --info --full-stacktrace"
+    - echo "**** Listing build directory ****"
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/jacoco/test
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/libs
+    - cat build/jacoco/test/html/index.html | grep -o 'Total[^%]*%'
+    - echo "**** Renaming files to please the eye ****"
+    - mv build/libs/versionchecker.jar build/libs/VersionChecker-$CI_COMMIT_REF_NAME.jar
+  coverage: '/Total.*?([0-9]{1,3})%/'
+  artifacts:
+    paths:
+      - build/libs/VersionChecker-$CI_COMMIT_REF_NAME.jar
+      - build/jacoco/test/jacocoTestReport.xml
+      - build/reports/tests/test
+    expire_in: 1 week
+
+Generate Release:
+  stage: Release
+  needs:
+    - job: Gradle Test
+      artifacts: false
+    - job: eslint-sast
+      artifacts: false
+    - job: nodejs-scan-sast
+      artifacts: false
+    - job: semgrep-sast
+      artifacts: false
+    - job: secret_detection
+      artifacts: false
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.0
+  script:
+    - npx semantic-release
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "alpha" && $CI_COMMIT_TITLE !~ /^RELEASE:.+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_BRANCH == "beta" && $CI_COMMIT_TITLE !~ /^RELEASE:.+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TITLE !~ /^RELEASE:.+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+
+Build Release:
+  stage: Build Release
+  image: griefed/baseimage-ubuntu-jdk-8:2.0.2
+  before_script:
+    - echo "**** Running in $CI_JOB_ID ****"
+    - echo "**** Java location ****"
+    - which java
+    - echo "**** Java version ****"
+    - java -version
+    - echo "**** Allowing execution of gradlew ****"
+    - chmod +x gradlew
+    - echo "**** Ensure clean environment ****"
+    - "./gradlew clean"
+    - echo ${CI_COMMIT_TAG} > backend/main/resources/VERSION.txt
+  script:
+    - echo "**** Building ServerPackCreator ****"
+    - "./gradlew build -Pversion=${CI_COMMIT_TAG} --info -x test"
+    - echo "**** Listing build directory ****"
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/libs
+    - LC_COLLATE=C ls -ah --group-directories-first --color=auto build/libs/libraries
+    - echo "**** Renaming files to please the eye ****"
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/libs
+    - echo "**** Uploading packages ****"
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/libs/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.jar
+    "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.jar"'
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/libs/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-javadoc.jar
+    "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-javadoc.jar"'
+    - 'curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file build/libs/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-sources.jar
+    "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-sources.jar"'
+    - echo "**** Create asset links ****"
+    - 'curl --request POST --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --data tag_name="${CI_COMMIT_TAG}"
+    --data name="${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.jar" --data url="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.jar"
+    --data link_type="package" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/links"'
+    - 'curl --request POST --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --data tag_name="${CI_COMMIT_TAG}"
+    --data name="${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-javadoc.jar" --data url="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-javadoc.jar"
+    --data link_type="package" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/links"'
+    - 'curl --request POST --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" --data tag_name="${CI_COMMIT_TAG}"
+    --data name="${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-sources.jar" --data url="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_PROJECT_NAME}/${CI_COMMIT_TAG}/${CI_PROJECT_NAME}-${CI_COMMIT_TAG}-sources.jar"
+    --data link_type="package" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/links"'
+  rules:
+    - if: "$CI_COMMIT_TAG =~ /^\\d+\\.\\d+\\.\\d+(-beta|-alpha)\\.\\d+$/"
+    - if: "$CI_COMMIT_TAG =~ /^\\d+\\.\\d+\\.\\d+$/"
+
+Publish Maven Artifacts:
+  stage: Build Release
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.2
+  before_script:
+    - echo "**** Running in $CI_JOB_ID ****"
+    - echo "**** Java location ****"
+    - which java
+    - echo "**** Java version ****"
+    - java -version
+    - echo "**** Allowing execution of gradlew ****"
+    - chmod +x gradlew
+    - echo "**** Ensure clean environment ****"
+  script:
+    - echo "**** Publishing Maven Artifacts ****"
+    - "./gradlew publish -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+
+Inform About Release:
+  stage: Build Release
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.0
+  needs:
+    - job: Build Release
+      artifacts: false
+  script:
+    - /discord.sh
+      --webhook-url="$WEBHOOK_URL"
+      --username "$CI_PROJECT_TITLE"
+      --avatar "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.png"
+      --text "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at <${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}>"
+      --title "New ${CI_PROJECT_TITLE} Release"
+      --description "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at ${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
+      --color "0xC0FFEE"
+      --url "${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
+      --author "Griefed"
+      --author-url "https://${CI_SERVER_HOST}/Griefed"
+      --author-icon "https://i.griefed.de/images/2022/01/21/sam_1500x1500.th.jpg"
+      --thumbnail "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.th.png"
+      --field "Author;[Griefed](https://${CI_SERVER_HOST}/Griefed)"
+      --field "Platform;[${CI_SERVER_HOST}](https://${CI_SERVER_HOST})"
+      --footer "Released at $CI_JOB_STARTED_AT"
+      --footer-icon "https://i.griefed.de/images/2022/01/21/start_generation.png"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
+
+release_job:
+  stage: Release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_SERVER_HOST == "gitlab.com"'
+  script:
+    - echo "Running the release job to mirror release generation from parent repository."
+  release:
+    tag_name: $CI_COMMIT_TAG
+    name: 'Release $CI_COMMIT_TAG'
+    description: './CHANGELOG.md'
+
+coverage:
+  stage: Other
+  image: registry.gitlab.com/haynes/jacoco2cobertura:1.0.8
+  allow_failure: true
+  script:
+    - python /opt/cover2cover.py build/jacoco/test/jacocoTestReport.xml $CI_PROJECT_DIR/backend/main/java/ > build/cobertura.xml || true
+    - python /opt/source2filename.py build/cobertura.xml || true
+  needs: ["Gradle Test"]
+  artifacts:
+    reports:
+      cobertura: build/cobertura.xml
+
+pages:
+  stage: Documentation
+  image: griefed/baseimage-ubuntu-jdk-8:2.0.2
+  before_script:
+    - which java
+    - chmod +x gradlew
+    - "./gradlew clean"
+  script:
+    - "./gradlew javaDoc --info -x test"
+    - cp -Rf build/docs/javadoc public
+    - LC_COLLATE=C ls -ahl --group-directories-first --color=auto public
+  only:
+    - main
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week

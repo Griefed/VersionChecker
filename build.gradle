@@ -1,35 +1,192 @@
+import java.text.SimpleDateFormat
+
 plugins {
-    id 'org.springframework.boot' version '2.6.2'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
     id 'java'
+
+    id 'java-library'
+    id 'signing'
+    id 'maven-publish'
+
+    id 'jacoco'
+    id 'idea'
 }
 
 group = 'de.griefed'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = targetCompatibility = '1.8'
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.1'
+
+    implementation 'org.jetbrains:annotations:22.0.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.junit.platform:junit-platform-commons:1.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 test {
-    outputs.dir snippetsDir
     useJUnitPlatform()
+    testLogging {
+        events "passed",
+                "skipped",
+                "failed"
+    }
+
+    finalizedBy jacocoTestReport
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
-    dependsOn test
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+
+    reports {
+        xml.required = true
+        //csv.required = false
+        //html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+    reportsDirectory = layout.buildDirectory.dir('jacoco')
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+    options.addStringOption('encoding','UTF-8')
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// JAR configuration still needed for Launch4j.
+jar {
+    // No duplicates
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Customize MANIFEST to include relevant information.
+    manifest {
+        attributes(
+                "Description"    : "A simple version checker, using semantic-release formats like 1.2.3, 2.3.4 or 6.6.6, as well as 3.4.5-alpha.2 or 4.5.6-beta.3, for a given GitHub user and repository, or GitLab repository URL.",
+                "Built-By"       : System.getProperty("user.name"),
+                "Build-Timestamp": new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                "Created-By"     : "Gradle ${gradle.gradleVersion}",
+                "Build-Jdk"      : "${System.getProperty('java.version')} (${System.getProperty('java.vendor')} ${System.getProperty('java.vm.version')})",
+                "Build-OS"       : "${System.getProperty('os.name')} ${System.getProperty('os.arch')} ${System.getProperty('os.version')}"
+        )
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+
+            groupId = 'de.griefed'
+            artifactId = 'versionchecker'
+            from components.java
+            version = project.version
+
+            pom {
+                name = 'VersionChecker'
+                description = 'A simple version checker, using semantic-release formats like 1.2.3, 2.3.4 or 6.6.6, as well as 3.4.5-alpha.2 or 4.5.6-beta.3, for a given GitHub user and repository, or GitLab repository URL.'
+                url = 'https://git.griefed.de/Griefed/VersionChecker.git'
+
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = 'griefed'
+                        name = 'Griefed'
+                        email = 'griefed@griefed.de'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git:git.griefed.de/Griefed/VersionChecker.git'
+                    developerConnection = 'scm:git:ssh://git.griefed.de/Griefed/VersionChecker.git'
+                    url = 'https://git.griefed.de/Griefed/VersionChecker.git'
+                }
+
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Griefed/versionchecker")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven {
+            url "https://git.griefed.de/api/v4/projects/104/packages/maven"
+            credentials(HttpHeaderCredentials) {
+                name = "Private-Token"
+                value = System.getenv("GITLAB_TOKEN")
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+        maven {
+            url "https://gitlab.com/api/v4/projects/33364648/packages/maven"
+            credentials(HttpHeaderCredentials) {
+                name = "Private-Token"
+                value = System.getenv("GITLABCOM_TOKEN")
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = project.properties["ossrhUsername"]
+                password = project.properties["ossrhPassword"]
+            }
+        }
+    }
+}
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+
+    useInMemoryPgpKeys(signingKey,signingPassword)
+    sign publishing.publications.mavenJava
 }

@@ -23,11 +23,16 @@
  */
 package de.griefed.versionchecker;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.client.HttpClientErrorException;
+import org.jetbrains.annotations.NotNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +42,8 @@ import java.util.List;
  * @author Griefed
  */
 public abstract class VersionChecker {
+
+    private static final Logger LOG = LogManager.getLogger(VersionChecker.class);
 
     private List<String> allVersions;
 
@@ -52,20 +59,23 @@ public abstract class VersionChecker {
      * New release available: <code>Current version: 2.0.0. A new release is available: 2.1.1. Download available at: https://github.com/Griefed/ServerPackCreator/releases/tag/2.1.1</code>
      * New prerelease available: <code>Current version: 2.0.0. A new PreRelease is available: 3.0.0-alpha.14. Download available at: https://github.com/Griefed/ServerPackCreator/releases/tag/3.0.0-alpha.14</code>
      */
-    public String checkForUpdate(String currentVersion, boolean checkForPreReleases) throws JsonProcessingException, HttpClientErrorException {
-        String check = isUpdateAvailable(currentVersion, checkForPreReleases);
-        String noUpdateMessage = "No updates available.";
-        String updateMessage = "A new release is available: ";
+    public String checkForUpdate(@NotNull String currentVersion, boolean checkForPreReleases) {
 
-        if (checkForPreReleases) {
-            noUpdateMessage = noUpdateMessage + " No PreReleases available.";
-            updateMessage = "A new PreRelease is available: ";
-        }
+        LOG.debug("Current version: " + currentVersion);
 
-        if (check.equals("up_to_date")) {
-            return noUpdateMessage;
-        } else {
-            return "Current version: " + currentVersion + ". " + updateMessage + check + ". Download available at: " + getDownloadUrl(check);
+        try {
+
+            String newVersion = isUpdateAvailable(currentVersion, checkForPreReleases);
+
+            if (newVersion.equals("up_to_date")) {
+                return "No updates available.";
+            } else {
+                return newVersion + ";" + getDownloadUrl(newVersion);
+            }
+
+        } catch (NumberFormatException ex) {
+            LOG.error("A version could not be parsed into integers.", ex);
+            return "No updates available.";
         }
     }
 
@@ -78,13 +88,13 @@ public abstract class VersionChecker {
      *                            if you want to check for PreReleases as well.
      * @return String. Returns the available update version. If no update is available, then <code>up_to_date</code> is returned.
      */
-    private String isUpdateAvailable(String currentVersion, boolean checkForPreReleases) {
+    private String isUpdateAvailable(@NotNull String currentVersion, boolean checkForPreReleases) {
 
         if (isNewBetaAvailable(currentVersion, checkForPreReleases) && checkForPreReleases) return latestBeta();
 
         if (isNewAlphaAvailable(currentVersion, checkForPreReleases) && checkForPreReleases) return latestAlpha();
 
-        if (isNewSemanticVersion(currentVersion, latestVersion())) return latestVersion();
+        if (isNewSemanticVersion(currentVersion, latestVersion(checkForPreReleases))) return latestVersion(checkForPreReleases);
 
         return "up_to_date";
     }
@@ -97,8 +107,15 @@ public abstract class VersionChecker {
      * @param newVersion String. New version to check against <code>currentVersion</code>.
      * @return Boolean. Returns <code>true</code> if the new version is indeed newer than the current version. Otherwise
      * <code>false</code>.
+     * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> or <code>newVersion</code> can not be
+     * parsed into integers.
      */
-    private boolean isNewSemanticVersion(String currentVersion, String newVersion) {
+    private boolean isNewSemanticVersion(@NotNull String currentVersion, @NotNull String newVersion) throws NumberFormatException {
+
+        LOG.debug("Current version: " + currentVersion);
+        LOG.debug("New version: " + newVersion);
+
+        if (newVersion.equals("no_release")) return false;
 
         int newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch;
 
@@ -131,8 +148,10 @@ public abstract class VersionChecker {
      * @param newVersion String. New version to check against <code>currentVersion</code>.
      * @return Boolean. Returns <code>true</code> if the new version is newer than or equal to the current version. Otherwise
      * <code>false</code>.
+     * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> or <code>newVersion</code> can not be
+     * parsed into integers.
      */
-    private boolean isNewOrSameSemanticVersion(String currentVersion, String newVersion) {
+    private boolean isNewOrSameSemanticVersion(@NotNull String currentVersion, @NotNull String newVersion) throws NumberFormatException {
         if (Integer.parseInt(newVersion.substring(0,1)) >= Integer.parseInt(currentVersion.substring(0,1))) {
             return true;
         } else if (Integer.parseInt(newVersion.substring(2,3)) >= Integer.parseInt(currentVersion.substring(2,3))) {
@@ -146,8 +165,10 @@ public abstract class VersionChecker {
      * @param currentVersion String. The current version to check against available alpha versions.
      * @param checkForPreRelease Boolean. Whether to check for PreReleases.
      * @return Boolean. Returns true if a new alpha release is found.
+     * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> can not be
+     * parsed into integers.
      */
-    private boolean isNewAlphaAvailable(String currentVersion, boolean checkForPreRelease) {
+    private boolean isNewAlphaAvailable(@NotNull String currentVersion, boolean checkForPreRelease) throws NumberFormatException {
 
         /*
          * If the current version does not contain alpha and checkForPreRelease is false, do not check for a new alpha
@@ -174,8 +195,10 @@ public abstract class VersionChecker {
      * @param currentVersion String. The current version to check against available beta versions.
      * @param checkForPreRelease Boolean. Whether to check for PreReleases.
      * @return Boolean. Returns true if a new beta release is found.
+     * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> can not be
+     * parsed into integers.
      */
-    private boolean isNewBetaAvailable(String currentVersion, boolean checkForPreRelease) {
+    private boolean isNewBetaAvailable(@NotNull String currentVersion, boolean checkForPreRelease) throws NumberFormatException {
 
         /*
          * If the current version does not contain beta and checkForPreRelease is false, do not check for a new beta
@@ -254,8 +277,9 @@ public abstract class VersionChecker {
      * Get the latest beta release.
      * @author Griefed
      * @return String. Returns the latest beta release. If no beta release is available, <code>no_betas</code> is returned.
+     * @throws NumberFormatException Thrown if a version can not be parsed into integers.
      */
-    private String latestBeta() {
+    protected String latestBeta() throws NumberFormatException {
 
         List<String> betaVersions = allBetaVersions();
         String beta = "no_betas";
@@ -266,12 +290,14 @@ public abstract class VersionChecker {
 
             for (String betaVersion : betaVersions) {
 
-                if (isNewOrSameSemanticVersion(beta, betaVersion) && Integer.parseInt(betaVersion.substring(11)) > Integer.parseInt(beta.substring(11))) {
+                if (isNewOrSameSemanticVersion(beta, betaVersion) && Integer.parseInt(betaVersion.substring(11)) >= Integer.parseInt(beta.substring(11))) {
                     beta = betaVersion;
                 }
             }
 
         }
+
+        LOG.debug("Latest beta: " + beta);
 
         return beta;
     }
@@ -280,8 +306,9 @@ public abstract class VersionChecker {
      * Get the latest alpha release.
      * @author Griefed
      * @return String. Returns the latest alpha release. If no alpha release is available, <code>no_alphas</code> is returned.
+     * @throws NumberFormatException Thrown if a versions can not be parsed into integers.
      */
-    private String latestAlpha() {
+    protected String latestAlpha() throws NumberFormatException {
 
         List<String> alphaVersions = allAlphaVersions();
         String alpha = "no_alphas";
@@ -299,8 +326,42 @@ public abstract class VersionChecker {
 
         }
 
+        LOG.debug("Latest alpha: " + alpha);
+
         return alpha;
     }
+
+    /**
+     * Acquire the response from a given URL.
+     * @author Griefed
+     * @param requestUrl String. The URL to get the response from.
+     * @return String. The response from the given URL.
+     * @throws IOException Thrown if the requested URL can not be reached or if any other error occurs during the request.
+     */
+    protected String getResponse(@NotNull URL requestUrl) throws IOException {
+        HttpURLConnection httpURLConnection = (HttpURLConnection) requestUrl.openConnection();
+        httpURLConnection.setRequestMethod("GET");
+
+        if (httpURLConnection.getResponseCode() != 200)
+            throw new IOException("Request for " + requestUrl + " responded with " + httpURLConnection.getResponseCode());
+
+        BufferedReader bufferedReader = new BufferedReader(
+                new InputStreamReader(httpURLConnection.getInputStream())
+        );
+
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = bufferedReader.readLine()) != null) {
+            response.append(inputLine);
+        }
+
+        bufferedReader.close();
+
+        return response.toString();
+    }
+
+    public abstract void refresh() throws IOException;
 
     protected void setAllVersions() {
         this.allVersions = allVersions();
@@ -310,13 +371,13 @@ public abstract class VersionChecker {
         return allVersions;
     }
 
-    protected abstract String latestVersion();
+    protected abstract String latestVersion(boolean checkForPreRelease);
 
-    protected abstract String getDownloadUrl(String version);
+    protected abstract String getDownloadUrl(@NotNull String version);
 
-    protected abstract void setRepository() throws JsonProcessingException, HttpClientErrorException;
+    protected abstract void setRepository() throws IOException;
 
-    public abstract List<String> getAssetsDownloadUrls(String version);
+    public abstract List<String> getAssetsDownloadUrls(@NotNull String version);
 
     protected ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
