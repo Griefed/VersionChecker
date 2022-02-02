@@ -33,70 +33,13 @@ sast:
     - exit 1
 
 .sast-analyzer:
+  stage: Tests
   extends: sast
   allow_failure: true
   # `rules` must be overridden explicitly by each child job
   # see https://gitlab.com/gitlab-org/gitlab/-/issues/218444
   script:
     - /analyzer run
-
-eslint-sast:
-  extends: .sast-analyzer
-  image:
-    name: "$SAST_ANALYZER_IMAGE"
-  variables:
-    SAST_ANALYZER_IMAGE_TAG: 2
-    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/eslint:$SAST_ANALYZER_IMAGE_TAG"
-  rules:
-    - if: $SAST_DISABLED
-      when: never
-    - if: $SAST_EXCLUDED_ANALYZERS =~ /eslint/
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - '**/*.html'
-        - '**/*.js'
-        - '**/*.jsx'
-        - '**/*.ts'
-        - '**/*.tsx'
-
-nodejs-scan-sast:
-  extends: .sast-analyzer
-  image:
-    name: "$SAST_ANALYZER_IMAGE"
-  variables:
-    SAST_ANALYZER_IMAGE_TAG: 2
-    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/nodejs-scan:$SAST_ANALYZER_IMAGE_TAG"
-  rules:
-    - if: $SAST_DISABLED
-      when: never
-    - if: $SAST_EXCLUDED_ANALYZERS =~ /nodejs-scan/
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - '**/package.json'
-
-semgrep-sast:
-  extends: .sast-analyzer
-  image:
-    name: "$SAST_ANALYZER_IMAGE"
-  variables:
-    SAST_ANALYZER_IMAGE_TAG: 2
-    SAST_ANALYZER_IMAGE: "$SECURE_ANALYZERS_PREFIX/semgrep:$SAST_ANALYZER_IMAGE_TAG"
-  rules:
-    - if: $SAST_DISABLED
-      when: never
-    - if: $SAST_EXCLUDED_ANALYZERS =~ /semgrep/
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - '**/*.py'
-        - '**/*.js'
-        - '**/*.jsx'
-        - '**/*.ts'
-        - '**/*.tsx'
-        - '**/*.c'
-        - '**/*.go'
 
 .secret-analyzer:
   stage: Tests
@@ -110,6 +53,7 @@ semgrep-sast:
       secret_detection: gl-secret-detection-report.json
 
 secret_detection:
+  stage: Tests
   extends: .secret-analyzer
   rules:
     - if: $SECRET_DETECTION_DISABLED
@@ -158,12 +102,6 @@ Generate Release:
   stage: Release
   needs:
     - job: Gradle Test
-      artifacts: false
-    - job: eslint-sast
-      artifacts: false
-    - job: nodejs-scan-sast
-      artifacts: false
-    - job: semgrep-sast
       artifacts: false
     - job: secret_detection
       artifacts: false
