@@ -3,6 +3,7 @@ stages:
   - Documentation
   - Release
   - Build Release
+  - Other
 
 variables:
   project_name: "$CI_PROJECT_NAME"
