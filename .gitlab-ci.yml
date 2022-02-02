@@ -82,18 +82,18 @@ Gradle Test:
     - echo "**** Ensure clean environment ****"
     - "./gradlew clean"
   script:
-    - echo "**** Building ServerPackCreator ****"
+    - echo "**** Building ${CI_PROJECT_NAME} ****"
     - "./gradlew build --info --full-stacktrace"
     - echo "**** Listing build directory ****"
     - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/jacoco/test
     - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build/libs
     - cat build/jacoco/test/html/index.html | grep -o 'Total[^%]*%'
     - echo "**** Renaming files to please the eye ****"
-    - mv build/libs/versionchecker.jar build/libs/VersionChecker-$CI_COMMIT_REF_NAME.jar
+    - mv build/libs/${CI_PROJECT_NAME}.jar build/libs/${CI_PROJECT_NAME}-$CI_COMMIT_REF_NAME.jar
   coverage: '/Total.*?([0-9]{1,3})%/'
   artifacts:
     paths:
-      - build/libs/VersionChecker-$CI_COMMIT_REF_NAME.jar
+      - build/libs/${CI_PROJECT_NAME}-$CI_COMMIT_REF_NAME.jar
       - build/jacoco/test/jacocoTestReport.xml
       - build/reports/tests/test
     expire_in: 1 week
@@ -128,7 +128,7 @@ Build Release:
     - "./gradlew clean"
     - echo ${CI_COMMIT_TAG} > backend/main/resources/VERSION.txt
   script:
-    - echo "**** Building ServerPackCreator ****"
+    - echo "**** Building ${CI_PROJECT_NAME} ****"
     - "./gradlew build -Pversion=${CI_COMMIT_TAG} --info -x test"
     - echo "**** Listing build directory ****"
     - LC_COLLATE=C ls -ahl --group-directories-first --color=auto build
