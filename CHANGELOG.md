@@ -1,3 +1,10 @@
+### [1.0.1](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.0...1.0.1) (2022-02-03)
+
+
+### 🛠 Fixes
+
+* Remove failing echo. Refactor urls in build.gradle. Clean environment before publishing ([a30f874](https://git.griefed.de/Griefed/VersionChecker/commit/a30f874e122891f65b8511c28fa240fd4a3a541f))
+
 ## [1.0.0](https://git.griefed.de/Griefed/VersionChecker/compare/...1.0.0) (2022-02-03)
 
 
