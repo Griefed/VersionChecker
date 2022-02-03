@@ -1,3 +1,10 @@
+### [1.0.4](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.3...1.0.4) (2022-02-03)
+
+
+### 🛠 Fixes
+
+* Running out of ideas ([4156706](https://git.griefed.de/Griefed/VersionChecker/commit/415670698de6adf5635207314263f47a0ed8adbb))
+
 ### [1.0.3](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.2...1.0.3) (2022-02-03)
 
 
