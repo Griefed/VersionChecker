@@ -1,3 +1,10 @@
+### [1.0.2](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.1...1.0.2) (2022-02-03)
+
+
+### 🛠 Fixes
+
+* Remove another failing echo. Retrieve OSSRH properties correctly. ([f8e21e6](https://git.griefed.de/Griefed/VersionChecker/commit/f8e21e6c1f448c49ca58837ee8578a8c542ac64a))
+
 ### [1.0.1](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.0...1.0.1) (2022-02-03)
 
 
