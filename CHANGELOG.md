@@ -1,3 +1,10 @@
+### [1.0.3](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.2...1.0.3) (2022-02-03)
+
+
+### 🛠 Fixes
+
+* Hopefully fix OSSRH username and password retrieval... Fix GitHub actions webhooks ([d2ae043](https://git.griefed.de/Griefed/VersionChecker/commit/d2ae0439af33d2db9823a351a7bdc8d9054492fd))
+
 ### [1.0.2](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.1...1.0.2) (2022-02-03)
 
 
