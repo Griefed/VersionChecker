@@ -5,6 +5,28 @@ for a given GitHub user and repository, or GitLab instance and project ID.
 
 Made for use as an update-checker in [ServerpackCreator](https://git.griefed.de/Griefed/ServerPackCreator), but you can do with it whatever you like.
 
+# Implementation
+
+## Maven
+
+```xml
+<dependency>
+  <groupId>de.griefed</groupId>
+  <artifactId>versionchecker</artifactId>
+  <version>$VERSION</version>
+</dependency>
+```
+
+## Gradle
+
+```groovy
+implementation 'de.griefed:versionchecker:$VERSION'
+```
+
+### Versions
+
+For available versions, see the [sonatype repo](https://search.maven.org/artifact/de.griefed/versionchecker/)
+
 # Example
 
 See [UpdateCheckerTests](src/test/java/de/griefed/versionchecker/UpdateCheckerTests.java)
