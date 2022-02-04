@@ -27,10 +27,35 @@ public class UpdateCheckerTests {
     @Test
     void checkForUpdates() {
         refresh();
-        Assertions.assertEquals("No updates available.",checkForUpdate());
+        Assertions.assertNotNull(checkForUpdate());
+
+        if (GITHUB != null) {
+            Assertions.assertNotNull(GITHUB.latestVersion(false));
+            Assertions.assertNotNull(GITHUB.latestVersion(true));
+            Assertions.assertNotNull(GITHUB.latestAlpha());
+            Assertions.assertNotNull(GITHUB.latestBeta());
+            Assertions.assertNotNull(GITHUB.getDownloadUrl("2.1.1"));
+            Assertions.assertNotNull(GITHUB.getAssetsDownloadUrls("2.1.1"));
+        }
+        if (GITLAB != null) {
+            Assertions.assertNotNull(GITLAB.latestVersion(false));
+            Assertions.assertNotNull(GITLAB.latestVersion(true));
+            Assertions.assertNotNull(GITLAB.latestAlpha());
+            Assertions.assertNotNull(GITLAB.latestBeta());
+            Assertions.assertNotNull(GITLAB.getDownloadUrl("2.1.1"));
+            Assertions.assertNotNull(GITLAB.getAssetsDownloadUrls("2.1.1"));
+        }
+        if (GITGRIEFED != null) {
+            Assertions.assertNotNull(GITGRIEFED.latestVersion(false));
+            Assertions.assertNotNull(GITGRIEFED.latestVersion(true));
+            Assertions.assertNotNull(GITGRIEFED.latestAlpha());
+            Assertions.assertNotNull(GITGRIEFED.latestBeta());
+            Assertions.assertNotNull(GITGRIEFED.getDownloadUrl("2.1.1"));
+            Assertions.assertNotNull(GITGRIEFED.getAssetsDownloadUrls("2.1.1"));
+        }
     }
 
-    public UpdateCheckerTests refresh() {
+    public void refresh() {
         try {
             this.GITHUB.refresh();
         } catch (Exception ex) {
@@ -49,11 +74,10 @@ public class UpdateCheckerTests {
             LOG.error("Error refreshing GitGriefed.", ex);
             this.GITGRIEFED = null;
         }
-        return this;
     }
 
     public String checkForUpdate() {
-        String updater = "No updates available.";
+        String updater = null;
 
         // Check GitHub for the most recent release.
         if (GITHUB != null) {
@@ -63,7 +87,7 @@ public class UpdateCheckerTests {
         }
 
 
-        if (GITGRIEFED != null) {
+        if (GITGRIEFED != null && updater != null) {
 
             // After checking GitLab, and we did not get a version, check GitGriefed.
             // Check GitGriefed for new versions which are not pre-releases. Run with true to check pre-releases as well.
@@ -79,7 +103,7 @@ public class UpdateCheckerTests {
         }
 
 
-        if (GITLAB != null) {
+        if (GITLAB != null && updater != null) {
 
             // After checking GitGriefed, and we did not get a version, check GitLab.
             // Check GitLab for new versions which are not pre-releases. Run with true to check pre-releases as well.
