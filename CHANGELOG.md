@@ -1,3 +1,15 @@
+### [1.0.5](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.4...1.0.5) (2022-02-04)
+
+
+### 📔 Docs
+
+* Improve documentation ([fffe5e8](https://git.griefed.de/Griefed/VersionChecker/commit/fffe5e8f085ea05c4a2189119034dc695edd4553))
+
+
+### 🧪 Tests
+
+* Some more assertions for versions and URLs ([e3a5a8a](https://git.griefed.de/Griefed/VersionChecker/commit/e3a5a8a7c43a68ae998444732710f30106f7f340))
+
 ### [1.0.4](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.3...1.0.4) (2022-02-03)
 
 
