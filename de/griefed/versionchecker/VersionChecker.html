@@ -114,7 +114,8 @@ var activeTableTab = "activeTableTab";
 <pre>public abstract class <span class="typeNameLabel">VersionChecker</span>
 extends java.lang.Object</pre>
 <div class="block">Baseclass from wich GitHub and GitLab checks extend. This class mainly provides the logic for comparing versions against
- each other to find out which is newer.</div>
+ each other to find out which is newer. Extend from this class if you want to implement your own checkers, for platforms
+ like Gitea or anything else.</div>
 </li>
 </ul>
 </div>
@@ -200,7 +201,7 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../de/griefed/versionchecker/VersionChecker.html#latestVersion-boolean-">latestVersion</a></span>(boolean&nbsp;checkForPreRelease)</code>&nbsp;</td>
 </tr>
 <tr id="i10" class="altColor">
-<td class="colFirst"><code>abstract void</code></td>
+<td class="colFirst"><code>abstract <a href="../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../de/griefed/versionchecker/VersionChecker.html#refresh--">refresh</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i11" class="rowColor">
@@ -274,15 +275,6 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="allVersions--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>allVersions</h4>
-<pre>protected abstract&nbsp;java.util.List&lt;java.lang.String&gt;&nbsp;allVersions()</pre>
-</li>
-</ul>
 <a name="latestBeta--">
 <!--   -->
 </a>
@@ -337,14 +329,32 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
+<a name="getObjectMapper--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getObjectMapper</h4>
+<pre>protected&nbsp;com.fasterxml.jackson.databind.ObjectMapper&nbsp;getObjectMapper()</pre>
+</li>
+</ul>
+<a name="allVersions--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>allVersions</h4>
+<pre>protected abstract&nbsp;java.util.List&lt;java.lang.String&gt;&nbsp;allVersions()</pre>
+</li>
+</ul>
 <a name="refresh--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>refresh</h4>
-<pre>public abstract&nbsp;void&nbsp;refresh()
-                      throws java.io.IOException</pre>
+<pre>public abstract&nbsp;<a href="../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a>&nbsp;refresh()
+                                throws java.io.IOException</pre>
 <dl>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
@@ -405,20 +415,11 @@ extends java.lang.Object</pre>
 <a name="getAssetsDownloadUrls-java.lang.String-">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>getAssetsDownloadUrls</h4>
 <pre>public abstract&nbsp;java.util.List&lt;java.lang.String&gt;&nbsp;getAssetsDownloadUrls(@NotNull
                                                                        @NotNull java.lang.String&nbsp;version)</pre>
-</li>
-</ul>
-<a name="getObjectMapper--">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>getObjectMapper</h4>
-<pre>protected&nbsp;com.fasterxml.jackson.databind.ObjectMapper&nbsp;getObjectMapper()</pre>
 </li>
 </ul>
 </li>

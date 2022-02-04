@@ -140,21 +140,23 @@
 </dd>
 <dt><a href="de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github"><span class="typeNameLink">GitHubChecker</span></a> - Class in <a href="de/griefed/versionchecker/github/package-summary.html">de.griefed.versionchecker.github</a></dt>
 <dd>
-<div class="block">Check a given repository, by a given user, for updates.<br>
+<div class="block">Check a given GitHub repository for updates.<br>
  Versions are checked for semantic-release-formatting.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/github/GitHubChecker.html#GitHubChecker-java.lang.String-">GitHubChecker(String)</a></span> - Constructor for class de.griefed.versionchecker.github.<a href="de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github">GitHubChecker</a></dt>
 <dd>
-<div class="block">Constructor for the GitHub checker.</div>
+<div class="block">Constructs a GitHub checker with the given <code>user/repository</code> combination to allow for version checks as
+ well as version and URL acquisition.</div>
 </dd>
 <dt><a href="de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab"><span class="typeNameLink">GitLabChecker</span></a> - Class in <a href="de/griefed/versionchecker/gitlab/package-summary.html">de.griefed.versionchecker.gitlab</a></dt>
 <dd>
-<div class="block">Check a given repository, by a given user, for updates.<br>
+<div class="block">Check a given GitLab repository for updates.<br>
  Versions are checked for semantic-release-formatting.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/gitlab/GitLabChecker.html#GitLabChecker-java.lang.String-">GitLabChecker(String)</a></span> - Constructor for class de.griefed.versionchecker.gitlab.<a href="de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab">GitLabChecker</a></dt>
 <dd>
-<div class="block">Constructor for the GitLab checker.</div>
+<div class="block">Constructs a GitLab checker with the given GitLab-URL to allow for version checks as well as version and URL
+ acquisition.</div>
 </dd>
 </dl>
 <a name="I:L">
@@ -187,9 +189,13 @@
 <h2 class="title">R</h2>
 <dl>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/github/GitHubChecker.html#refresh--">refresh()</a></span> - Method in class de.griefed.versionchecker.github.<a href="de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github">GitHubChecker</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Refresh this GitHub-instance.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/gitlab/GitLabChecker.html#refresh--">refresh()</a></span> - Method in class de.griefed.versionchecker.gitlab.<a href="de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab">GitLabChecker</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Refresh this GitLab-instance.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/VersionChecker.html#refresh--">refresh()</a></span> - Method in class de.griefed.versionchecker.<a href="de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -201,7 +207,9 @@
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/VersionChecker.html#setAllVersions--">setAllVersions()</a></span> - Method in class de.griefed.versionchecker.<a href="de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/github/GitHubChecker.html#setRepository--">setRepository()</a></span> - Method in class de.griefed.versionchecker.github.<a href="de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github">GitHubChecker</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Acquire this instances repository information and store it in a <code>JsonNode</code> for later use.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="de/griefed/versionchecker/gitlab/GitLabChecker.html#setRepository--">setRepository()</a></span> - Method in class de.griefed.versionchecker.gitlab.<a href="de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab">GitLabChecker</a></dt>
 <dd>
 <div class="block">Set the repository JsonNode, for the given <code>GITLAB_API</code>-URL this GitLabChecker-instance was initialized

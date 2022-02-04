@@ -114,7 +114,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">GitLabChecker</span>
 extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></pre>
-<div class="block">Check a given repository, by a given user, for updates.<br>
+<div class="block">Check a given GitLab repository for updates.<br>
  Versions are checked for semantic-release-formatting. Meaning tags must look like the following examples:<br>
  2.0.0<br>
  2.1.1<br>
@@ -141,7 +141,8 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html#GitLabChecker-java.lang.String-">GitLabChecker</a></span>(@NotNull java.lang.String&nbsp;repositoryUrl)</code>
-<div class="block">Constructor for the GitLab checker.</div>
+<div class="block">Constructs a GitLab checker with the given GitLab-URL to allow for version checks as well as version and URL
+ acquisition.</div>
 </td>
 </tr>
 </table>
@@ -184,8 +185,10 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html#refresh--">refresh</a></span>()</code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab">GitLabChecker</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html#refresh--">refresh</a></span>()</code>
+<div class="block">Refresh this GitLab-instance.</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
@@ -232,8 +235,8 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <pre>public&nbsp;GitLabChecker(@NotNull
                      @NotNull java.lang.String&nbsp;repositoryUrl)
               throws java.net.MalformedURLException</pre>
-<div class="block">Constructor for the GitLab checker. Checks the given GitLab repositories version and tries to acquire the latest version,
- if available.</div>
+<div class="block">Constructs a GitLab checker with the given GitLab-URL to allow for version checks as well as version and URL
+ acquisition.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>repositoryUrl</code> - String. The full /api/v4-GitLab-repository-URL you want to check. Examples:<br>
@@ -258,13 +261,16 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <ul class="blockList">
 <li class="blockList">
 <h4>refresh</h4>
-<pre>public&nbsp;void&nbsp;refresh()
-             throws java.io.IOException</pre>
+<pre>public&nbsp;<a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html" title="class in de.griefed.versionchecker.gitlab">GitLabChecker</a>&nbsp;refresh()
+                      throws java.io.IOException</pre>
+<div class="block">Refresh this GitLab-instance. Refreshes repository information and the list of all available versions.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#refresh--">refresh</a></code>&nbsp;in class&nbsp;<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>This GitLab-instance.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.io.IOException</code></dd>
+<dd><code>java.io.IOException</code> - Exception thrown if <a href="../../../../de/griefed/versionchecker/gitlab/GitLabChecker.html#setRepository--"><code>setRepository()</code></a> encounters an error.</dd>
 </dl>
 </li>
 </ul>

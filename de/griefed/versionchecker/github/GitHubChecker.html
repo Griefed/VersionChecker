@@ -114,7 +114,7 @@ var activeTableTab = "activeTableTab";
 <br>
 <pre>public class <span class="typeNameLabel">GitHubChecker</span>
 extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></pre>
-<div class="block">Check a given repository, by a given user, for updates.<br>
+<div class="block">Check a given GitHub repository for updates.<br>
  Versions are checked for semantic-release-formatting. Meaning tags must look like the following examples:<br>
  2.0.0<br>
  2.1.1<br>
@@ -141,7 +141,8 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 </tr>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#GitHubChecker-java.lang.String-">GitHubChecker</a></span>(@NotNull java.lang.String&nbsp;gitHubUserRepository)</code>
-<div class="block">Constructor for the GitHub checker.</div>
+<div class="block">Constructs a GitHub checker with the given <code>user/repository</code> combination to allow for version checks as
+ well as version and URL acquisition.</div>
 </td>
 </tr>
 </table>
@@ -184,12 +185,16 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#refresh--">refresh</a></span>()</code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github">GitHubChecker</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#refresh--">refresh</a></span>()</code>
+<div class="block">Refresh this GitHub-instance.</div>
+</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#setRepository--">setRepository</a></span>()</code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#setRepository--">setRepository</a></span>()</code>
+<div class="block">Acquire this instances repository information and store it in a <code>JsonNode</code> for later use.</div>
+</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -229,10 +234,11 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <pre>public&nbsp;GitHubChecker(@NotNull
                      @NotNull java.lang.String&nbsp;gitHubUserRepository)
               throws java.net.MalformedURLException</pre>
-<div class="block">Constructor for the GitHub checker. Checks a given GitHub repositories versions and latest version, if available.</div>
+<div class="block">Constructs a GitHub checker with the given <code>user/repository</code> combination to allow for version checks as
+ well as version and URL acquisition.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>gitHubUserRepository</code> - String. GitHub user/repository combination. For example <code>Griefed/ServerPackCreator</code></dd>
+<dd><code>gitHubUserRepository</code> - String. GitHub <code>user/repository</code>-combination. For example <code>Griefed/ServerPackCreator</code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.net.MalformedURLException</code> - Thrown if the resulting URL is malformed or otherwise invalid.</dd>
 </dl>
@@ -252,13 +258,17 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <ul class="blockList">
 <li class="blockList">
 <h4>refresh</h4>
-<pre>public&nbsp;void&nbsp;refresh()
-             throws java.io.IOException</pre>
+<pre>public&nbsp;<a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html" title="class in de.griefed.versionchecker.github">GitHubChecker</a>&nbsp;refresh()
+                      throws java.io.IOException</pre>
+<div class="block">Refresh this GitHub-instance. Refreshes repository information, the latest version, as well as a list of all available
+ versions.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#refresh--">refresh</a></code>&nbsp;in class&nbsp;<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>This GitHub-instance.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.io.IOException</code></dd>
+<dd><code>java.io.IOException</code> - Exception thrown if <a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#setRepository--"><code>setRepository()</code></a> or <a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#setLatest--"><code>setLatest()</code></a> encounter an error.</dd>
 </dl>
 </li>
 </ul>
@@ -324,11 +334,12 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <h4>setRepository</h4>
 <pre>protected&nbsp;void&nbsp;setRepository()
                       throws java.io.IOException</pre>
+<div class="block">Acquire this instances repository information and store it in a <code>JsonNode</code> for later use.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#setRepository--">setRepository</a></code>&nbsp;in class&nbsp;<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></code></dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
-<dd><code>java.io.IOException</code></dd>
+<dd><code>java.io.IOException</code> - Thrown if the repository can not be reached or any other unexpected error occurs.</dd>
 </dl>
 </li>
 </ul>
