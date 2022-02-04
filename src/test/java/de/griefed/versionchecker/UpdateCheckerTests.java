@@ -26,14 +26,31 @@ public class UpdateCheckerTests {
 
     @Test
     void checkForUpdates() {
-        refresh();
-        Assertions.assertNotNull(checkForUpdate());
+        try {
+            Assertions.assertNotNull(this.GITHUB.refresh());
+        } catch (Exception ex) {
+            LOG.error("Error refreshing GitHub.", ex);
+            this.GITHUB = null;
+        }
+        try {
+            Assertions.assertNotNull(this.GITLAB.refresh());
+        } catch (Exception ex) {
+            LOG.error("Error refreshing GitLab.", ex);
+            this.GITLAB = null;
+        }
+        try {
+            Assertions.assertNotNull(this.GITGRIEFED.refresh());
+        } catch (Exception ex) {
+            LOG.error("Error refreshing GitGriefed.", ex);
+            this.GITGRIEFED = null;
+        }
 
         if (GITHUB != null) {
             Assertions.assertNotNull(GITHUB.latestVersion(false));
             Assertions.assertNotNull(GITHUB.latestVersion(true));
             Assertions.assertNotNull(GITHUB.latestAlpha());
             Assertions.assertNotNull(GITHUB.latestBeta());
+            GITHUB.allVersions();
             Assertions.assertNotNull(GITHUB.getDownloadUrl("2.1.1"));
             Assertions.assertNotNull(GITHUB.getAssetsDownloadUrls("2.1.1"));
         }
@@ -53,27 +70,8 @@ public class UpdateCheckerTests {
             Assertions.assertNotNull(GITGRIEFED.getDownloadUrl("2.1.1"));
             Assertions.assertNotNull(GITGRIEFED.getAssetsDownloadUrls("2.1.1"));
         }
-    }
 
-    public void refresh() {
-        try {
-            this.GITHUB.refresh();
-        } catch (Exception ex) {
-            LOG.error("Error refreshing GitHub.", ex);
-            this.GITHUB = null;
-        }
-        try {
-            this.GITLAB.refresh();
-        } catch (Exception ex) {
-            LOG.error("Error refreshing GitLab.", ex);
-            this.GITLAB = null;
-        }
-        try {
-            this.GITGRIEFED.refresh();
-        } catch (Exception ex) {
-            LOG.error("Error refreshing GitGriefed.", ex);
-            this.GITGRIEFED = null;
-        }
+        Assertions.assertNotNull(checkForUpdate());
     }
 
     public String checkForUpdate() {

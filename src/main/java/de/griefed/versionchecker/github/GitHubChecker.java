@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Check a given repository, by a given user, for updates.<br>
+ * Check a given GitHub repository for updates.<br>
  * Versions are checked for semantic-release-formatting. Meaning tags must look like the following examples:<br>
  * 2.0.0<br>
  * 2.1.1<br>
@@ -57,9 +57,10 @@ public class GitHubChecker extends VersionChecker {
     private JsonNode latest;
 
     /**
-     * Constructor for the GitHub checker. Checks a given GitHub repositories versions and latest version, if available.
+     * Constructs a GitHub checker with the given <code>user/repository</code> combination to allow for version checks as
+     * well as version and URL acquisition.
      * @author Griefed
-     * @param gitHubUserRepository String. GitHub user/repository combination. For example <code>Griefed/ServerPackCreator</code>
+     * @param gitHubUserRepository String. GitHub <code>user/repository</code>-combination. For example <code>Griefed/ServerPackCreator</code>
      * @throws MalformedURLException Thrown if the resulting URL is malformed or otherwise invalid.
      */
     public GitHubChecker(@NotNull String gitHubUserRepository) throws MalformedURLException {
@@ -67,11 +68,20 @@ public class GitHubChecker extends VersionChecker {
         this.GITHUB_API_LATEST = new URL("https://api.github.com/repos/" + gitHubUserRepository + "/releases/latest");
     }
 
+    /**
+     * Refresh this GitHub-instance. Refreshes repository information, the latest version, as well as a list of all available
+     * versions.
+     * @author Griefed
+     * @throws IOException Exception thrown if {@link #setRepository()} or {@link #setLatest()} encounter an error.
+     * @return This GitHub-instance.
+     */
     @Override
-    public void refresh() throws IOException {
+    public GitHubChecker refresh() throws IOException {
         setRepository();
         setLatest();
         setAllVersions();
+
+        return this;
     }
 
     /**
@@ -146,12 +156,22 @@ public class GitHubChecker extends VersionChecker {
         return "No URL found.";
     }
 
+    /**
+     * Acquire this instances repository information and store it in a {@link JsonNode} for later use.
+     * @author Griefed
+     * @throws IOException Thrown if the repository can not be reached or any other unexpected error occurs.
+     */
     @Override
     protected void setRepository() throws IOException {
         this.repository = getObjectMapper().readTree(getResponse(GITHUB_API));
 
     }
 
+    /**
+     * Acquires the latest version for this instances repository.
+     * @author Griefed
+     * @throws IOException Thrown if the repository can not be reached or any other unexpected error occurs.
+     */
     private void setLatest() throws IOException {
         this.latest = getObjectMapper().readTree(getResponse(GITHUB_API_LATEST));
     }

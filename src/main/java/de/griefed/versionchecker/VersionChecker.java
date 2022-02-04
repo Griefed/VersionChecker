@@ -38,7 +38,8 @@ import java.util.List;
 
 /**
  * Baseclass from wich GitHub and GitLab checks extend. This class mainly provides the logic for comparing versions against
- * each other to find out which is newer.
+ * each other to find out which is newer. Extend from this class if you want to implement your own checkers, for platforms
+ * like Gitea or anything else.
  * @author Griefed
  */
 public abstract class VersionChecker {
@@ -271,8 +272,6 @@ public abstract class VersionChecker {
         }
     }
 
-    protected abstract List<String> allVersions();
-
     /**
      * Get the latest beta release.
      * @author Griefed
@@ -361,7 +360,16 @@ public abstract class VersionChecker {
         return response.toString();
     }
 
-    public abstract void refresh() throws IOException;
+    protected ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        return objectMapper;
+    }
+
+    protected abstract List<String> allVersions();
+
+    public abstract VersionChecker refresh() throws IOException;
 
     protected void setAllVersions() {
         this.allVersions = allVersions();
@@ -378,12 +386,5 @@ public abstract class VersionChecker {
     protected abstract void setRepository() throws IOException;
 
     public abstract List<String> getAssetsDownloadUrls(@NotNull String version);
-
-    protected ObjectMapper getObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        return objectMapper;
-    }
 
 }

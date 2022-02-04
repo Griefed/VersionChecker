@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Check a given repository, by a given user, for updates.<br>
+ * Check a given GitLab repository for updates.<br>
  * Versions are checked for semantic-release-formatting. Meaning tags must look like the following examples:<br>
  * 2.0.0<br>
  * 2.1.1<br>
@@ -55,8 +55,8 @@ public class GitLabChecker extends VersionChecker {
     private JsonNode repository;
 
     /**
-     * Constructor for the GitLab checker. Checks the given GitLab repositories version and tries to acquire the latest version,
-     * if available.
+     * Constructs a GitLab checker with the given GitLab-URL to allow for version checks as well as version and URL
+     * acquisition.
      * @author Griefed
      * @param repositoryUrl String. The full /api/v4-GitLab-repository-URL you want to check. Examples:<br>
      *                   <code>https://gitlab.com/api/v4/projects/32677538/releases</code><br>
@@ -67,10 +67,18 @@ public class GitLabChecker extends VersionChecker {
         this.GITLAB_API = new URL(repositoryUrl);
     }
 
+    /**
+     * Refresh this GitLab-instance. Refreshes repository information and the list of all available versions.
+     * @author Griefed
+     * @throws IOException Exception thrown if {@link #setRepository()} encounters an error.
+     * @return This GitLab-instance.
+     */
     @Override
-    public void refresh() throws IOException  {
+    public GitLabChecker refresh() throws IOException  {
         setRepository();
         setAllVersions();
+
+        return this;
     }
 
     /**
