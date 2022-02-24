@@ -1,3 +1,21 @@
+### [1.0.6](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.5...1.0.6) (2022-02-24)
+
+
+### 🦊 CI/CD
+
+* Enable RenovateBot dependency updates ([dc8b030](https://git.griefed.de/Griefed/VersionChecker/commit/dc8b03088fb82c074050c9c00e72b90bf2f913e6))
+* **GitHub:** Correctly execute (pre)release actions when tags are pushed. ([ae605c0](https://git.griefed.de/Griefed/VersionChecker/commit/ae605c07a5dbf8d21c15047b834845c91a787020))
+
+
+### 🛠 Fixes
+
+* Get rid of substring calls. Check a given release, alpha, or beta version for available updates and ensure checks are performed correctly. ([345bf8d](https://git.griefed.de/Griefed/VersionChecker/commit/345bf8d8005bc842941d8bc8419f6e38df409fa6))
+
+
+### Other
+
+* Cleanups ([7727715](https://git.griefed.de/Griefed/VersionChecker/commit/77277151d33a216f742e1e0265a9f15ab2151a1f))
+
 ### [1.0.5](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.4...1.0.5) (2022-02-04)
 
 
