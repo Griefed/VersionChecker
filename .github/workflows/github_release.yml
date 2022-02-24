@@ -23,6 +23,10 @@ jobs:
         run: echo ${{steps.tag.outputs.tag}}
 
       # GENERATE CHANGELOG, RELEASE
+      - id: conventional_changelog
+        uses: ardalanamini/auto-changelog@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@latest
@@ -32,9 +36,9 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: Release ${{steps.tag.outputs.tag}}
           body: |
-            Automatic pre-release of version: **${{steps.tag.outputs.tag}}**
-            **Changes in this pre-release:**
-            TO BE COPY'N'PASTED BY GRIEFED FROM GITLAB
+            Automatic release of version: **${{steps.tag.outputs.tag}}**
+            **Changes in this release:**
+            ${{ steps.conventional_changelog.outputs.changelog }}
           draft: false
           prerelease: false
 
@@ -51,7 +55,7 @@ jobs:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./gradlew build -Pversion=${CI_COMMIT_TAG} --info --no-daemon -x test
+          ./gradlew build -Pversion=${{steps.tag.outputs.tag}} --info --no-daemon -x test
       - name: List files
         run: ls -ahl build/libs
 
@@ -76,8 +80,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/ServerPackCreator-${{steps.tag.outputs.tag}}.jar
-          asset_name: ServerPackCreator-${{steps.tag.outputs.tag}}.jar
+          asset_path: ./build/libs/VersionChecker-${{steps.tag.outputs.tag}}
+          asset_name: VersionChecker-${{steps.tag.outputs.tag}}.jar
           asset_content_type: application/jar
 
       - name: Upload Release Asset Sources Jar
@@ -87,8 +91,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/ServerPackCreator-${{steps.tag.outputs.tag}}-sources.jar
-          asset_name: ServerPackCreator-${{steps.tag.outputs.tag}}-sources.jar
+          asset_path: ./build/libs/VersionChecker-${{steps.tag.outputs.tag}}-sources.jar
+          asset_name: VersionChecker-${{steps.tag.outputs.tag}}-sources.jar
           asset_content_type: application/jar
 
       - name: Upload Release Asset Javadoc Jar
@@ -98,8 +102,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/ServerPackCreator-${{steps.tag.outputs.tag}}-javadoc.jar
-          asset_name: ServerPackCreator-${{steps.tag.outputs.tag}}-javadoc.jar
+          asset_path: ./build/libs/VersionChecker-${{steps.tag.outputs.tag}}-javadoc.jar
+          asset_name: VersionChecker-${{steps.tag.outputs.tag}}-javadoc.jar
           asset_content_type: application/jar
 
       - name: Get current date
