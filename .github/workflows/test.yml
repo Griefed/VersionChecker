@@ -29,7 +29,6 @@ jobs:
           path: |
             build/libs/
             !build/libs/libraries/
-            frontend/dist/spa
           if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
       - uses: actions/upload-artifact@v2
         if: failure()
