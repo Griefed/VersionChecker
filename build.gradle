@@ -1,3 +1,4 @@
+//file:noinspection GroovyAssignabilityCheck, GrUnresolvedAccess, GroovyUnusedAssignment
 import java.text.SimpleDateFormat
 
 plugins {
@@ -64,8 +65,6 @@ jacocoTestReport {
 
     reports {
         xml.required = true
-        //csv.required = false
-        //html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
 }
 
@@ -91,6 +90,7 @@ java {
 jar {
     // No duplicates
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
     // Customize MANIFEST to include relevant information.
     manifest {
         attributes(
@@ -178,10 +178,6 @@ publishing {
             credentials {
                 username = System.getenv("OSSRH_USERNAME")
                 password = System.getenv("OSSRH_PASSWORD")
-                /*
-                username = findProperty("sonatypeUsername")
-                password = findProperty("sonatypePassword")
-                */
             }
         }
     }
