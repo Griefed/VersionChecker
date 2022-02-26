@@ -181,7 +181,7 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../de/griefed/versionchecker/github/GitHubChecker.html#latestVersion-boolean-">latestVersion</a></span>(boolean&nbsp;checkForPreRelease)</code>
-<div class="block">Get the latest regular release.</div>
+<div class="block">Get the latest regular release, or pre-release if <code>checkForPreRelease</code> is <code>true</code>.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -202,7 +202,7 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;de.griefed.versionchecker.<a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></h3>
-<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#checkForUpdate-java.lang.String-boolean-">checkForUpdate</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getAllVersions--">getAllVersions</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getObjectMapper--">getObjectMapper</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getResponse-java.net.URL-">getResponse</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#latestAlpha--">latestAlpha</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#latestBeta--">latestBeta</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#setAllVersions--">setAllVersions</a></code></li>
+<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#checkForUpdate-java.lang.String-boolean-">checkForUpdate</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#compareSemantics-java.lang.String-java.lang.String-de.griefed.versionchecker.Comparison-">compareSemantics</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getAllVersions--">getAllVersions</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getObjectMapper--">getObjectMapper</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#getResponse-java.net.URL-">getResponse</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#latestAlpha--">latestAlpha</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#latestBeta--">latestBeta</a>, <a href="../../../../de/griefed/versionchecker/VersionChecker.html#setAllVersions--">setAllVersions</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -296,7 +296,7 @@ extends <a href="../../../../de/griefed/versionchecker/VersionChecker.html" titl
 <li class="blockList">
 <h4>latestVersion</h4>
 <pre>public&nbsp;java.lang.String&nbsp;latestVersion(boolean&nbsp;checkForPreRelease)</pre>
-<div class="block">Get the latest regular release.</div>
+<div class="block">Get the latest regular release, or pre-release if <code>checkForPreRelease</code> is <code>true</code>.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../../../de/griefed/versionchecker/VersionChecker.html#latestVersion-boolean-">latestVersion</a></code>&nbsp;in class&nbsp;<code><a href="../../../../de/griefed/versionchecker/VersionChecker.html" title="class in de.griefed.versionchecker">VersionChecker</a></code></dd>
