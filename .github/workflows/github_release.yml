@@ -80,7 +80,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/libs/VersionChecker-${{steps.tag.outputs.tag}}
+          asset_path: ./build/libs/VersionChecker-${{steps.tag.outputs.tag}}.jar
           asset_name: VersionChecker-${{steps.tag.outputs.tag}}.jar
           asset_content_type: application/jar
 
