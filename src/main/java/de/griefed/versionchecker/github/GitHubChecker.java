@@ -24,6 +24,7 @@
 package de.griefed.versionchecker.github;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.griefed.versionchecker.Comparison;
 import org.jetbrains.annotations.NotNull;
 import de.griefed.versionchecker.VersionChecker;
 import org.apache.logging.log4j.LogManager;
@@ -106,7 +107,7 @@ public class GitHubChecker extends VersionChecker {
         LOG.debug("All versions: " + versions);
 
         // In case the given repository does not have any releases
-        if (versions == null || versions.size() == 0) {
+        if (versions.size() == 0) {
             return null;
         }
 
@@ -114,7 +115,7 @@ public class GitHubChecker extends VersionChecker {
     }
 
     /**
-     * Get the latest regular release.
+     * Get the latest regular release, or pre-release if <code>checkForPreRelease</code> is <code>true</code>.
      * @author Griefed
      * @param checkForPreRelease Boolean. Whether to include alpha and beta releases for latest release versions.
      * @return String. Returns the latest regular release. If no regular release is available, <code>no_release</code> is returned.
@@ -122,14 +123,25 @@ public class GitHubChecker extends VersionChecker {
     @Override
     public String latestVersion(boolean checkForPreRelease) {
         if (latest != null) {
+
+            String version = latest.get("tag_name").asText();
+
+            if (checkForPreRelease) {
+
+                String alpha = latestAlpha();
+                String beta = latestBeta();
+
+                if (!beta.equals("no_betas") && compareSemantics(version, beta, Comparison.NEW)) {
+                    version = beta;
+                }
+
+                if (!alpha.equals("no_alphas") && compareSemantics(version, alpha, Comparison.NEW)) {
+                    version = alpha;
+                }
+            }
+
             LOG.debug("Latest version:" + latest);
-            return latest.get("tag_name").asText();
-        }
-
-        if (checkForPreRelease) {
-            if (!latestBeta().equals("no_betas")) return latestBeta();
-
-            if (!latestAlpha().equals("no_alphas")) return latestAlpha();
+            return version;
         }
 
         return "no_release";

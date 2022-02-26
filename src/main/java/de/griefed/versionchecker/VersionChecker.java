@@ -92,106 +92,100 @@ public abstract class VersionChecker {
     private String isUpdateAvailable(@NotNull String currentVersion, boolean checkForPreReleases) {
 
         if (checkForPreReleases) {
-            if (isNewBetaAvailable(currentVersion)) return latestBeta();
+            if (isNewBetaAvailable(currentVersion)) {
+                return latestBeta();
+            }
 
-            if (isNewAlphaAvailable(currentVersion)) return latestAlpha();
+            if (isNewAlphaAvailable(currentVersion)) {
+                return latestAlpha();
+            }
         }
 
-        if (isNewSemanticVersion(currentVersion, latestVersion(checkForPreReleases))) return latestVersion(checkForPreReleases);
+        if (compareSemantics(currentVersion, latestVersion(checkForPreReleases), Comparison.NEW)) {
+            return latestVersion(checkForPreReleases);
+        }
 
         return "up_to_date";
     }
 
     /**
-     * Check the given current version against the given new version whether the new version is actually newer.
+     * Compare the given new version against the given current version, depending on comparison type <code>EQUAL</code>,
+     * <code>NEW</code>, or <code>EQUAL_OR_NEW</code>.
      * Checks are performed with the semantic release-formatting, e.g. 1.2.3, 2.3.4, 6.6.6
      * @author Griefed
      * @param currentVersion String. Current version to check against <code>newVersion</code>.
      * @param newVersion String. New version to check against <code>currentVersion</code>.
+     * @param comparison {@link Comparison} Comparison level. Either <code>EQUAL</code>, <code>NEW</code>, or <code>EQUAL_OR_NEW</code>.
      * @return Boolean. Returns <code>true</code> if the new version is indeed newer than the current version. Otherwise
      * <code>false</code>.
      * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> or <code>newVersion</code> can not be
      * parsed into integers.
      */
-    private boolean isNewSemanticVersion(@NotNull String currentVersion, @NotNull String newVersion) throws NumberFormatException {
+    protected boolean compareSemantics(@NotNull String currentVersion, @NotNull String newVersion, @NotNull Comparison comparison) {
 
         LOG.debug("Current version: " + currentVersion);
-        LOG.debug("New version: " + newVersion);
+        LOG.debug("New version:     " + newVersion);
+        LOG.debug("Comparison:      " + comparison);
 
-        if (newVersion.equals("no_release")) return false;
+        if (newVersion.equals("no_release")) {
+            return false;
+        }
 
         int newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch;
 
-        String[] currentVersionSemantics = currentVersion.split("\\.");
-        String[] newVersionSemantics = newVersion.split("\\.");
+        List<Integer> currentSemantics = getSemantics(currentVersion);
+        List<Integer> newSemantics = getSemantics(newVersion);
 
-        currentMajor = Integer.parseInt(currentVersionSemantics[0]);
-        currentMinor = Integer.parseInt(currentVersionSemantics[1]);
-        if (currentVersionSemantics[2].contains("-")) {
+        currentMajor = currentSemantics.get(0);
+        currentMinor = currentSemantics.get(1);
+        currentPatch = currentSemantics.get(2);
 
-            currentPatch = Integer.parseInt(currentVersionSemantics[2].split("-")[0]);
+        newMajor = newSemantics.get(0);
+        newMinor = newSemantics.get(1);
+        newPatch = newSemantics.get(2);
 
-        } else {
+        switch (comparison) {
 
-            currentPatch = Integer.parseInt(currentVersionSemantics[2]);
+            case EQUAL:
+                return checkEqual(newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch);
+
+            case NEW:
+                return checkNew(newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch);
+
+            case EQUAL_OR_NEW:
+                return checkNewOrEqual(newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch);
+
+            default:
+                LOG.error("Incorrect comparison type selected: " + comparison);
+                return false;
 
         }
-
-        newMajor = Integer.parseInt(newVersionSemantics[0]);
-        newMinor = Integer.parseInt(newVersionSemantics[0]);
-        if (newVersionSemantics[2].contains("-")) {
-            newPatch = Integer.parseInt(newVersionSemantics[2].split("-")[0]);
-        } else {
-            newPatch = Integer.parseInt(newVersionSemantics[0]);
-        }
-
-        return checkNew(newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch);
     }
 
     /**
-     * Check the given current version against the given new version whether the new version is actually newer or the same.
-     * Checks are performed with the semantic release-formatting, e.g. 1.2.3, 2.3.4, 6.6.6
+     * Acquire the version numbers of a semantic-formatted version.
      * @author Griefed
-     * @param currentVersion String. Current version to check against <code>newVersion</code>.
-     * @param newVersion String. New version to check against <code>currentVersion</code>.
-     * @return Boolean. Returns <code>true</code> if the new version is newer than or the same as the current version. Otherwise
-     * <code>false</code>.
-     * @throws NumberFormatException Thrown if the passed <code>currentVersion</code> or <code>newVersion</code> can not be
-     * parsed into integers.
+     * @param version String. The version from which to acquire the version numbers.
+     * @return Integer List. List of version numbers. Major index 0, minor index 1, patch index 2.
      */
-    private boolean isNewOrSameSemanticVersion(@NotNull String currentVersion, @NotNull String newVersion) throws NumberFormatException {
+    private List<Integer> getSemantics(String version) {
+        List<Integer> semantics = new ArrayList<>(3);
 
-        LOG.debug("Current version: " + currentVersion);
-        LOG.debug("New version: " + newVersion);
+        String[] versionNumbers = version.split("\\.");
 
-        if (newVersion.equals("no_release")) return false;
+        semantics.add(0,Integer.parseInt(versionNumbers[0]));
+        semantics.add(1,Integer.parseInt(versionNumbers[1]));
+        if (versionNumbers[2].contains("-")) {
 
-        int newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch;
-
-        String[] currentVersionSemantics = currentVersion.split("\\.");
-        String[] newVersionSemantics = newVersion.split("\\.");
-
-        currentMajor = Integer.parseInt(currentVersionSemantics[0]);
-        currentMinor = Integer.parseInt(currentVersionSemantics[1]);
-        if (currentVersionSemantics[2].contains("-")) {
-
-            currentPatch = Integer.parseInt(currentVersionSemantics[2].split("-")[0]);
+            semantics.add(2,Integer.parseInt(versionNumbers[2].split("-")[0]));
 
         } else {
 
-            currentPatch = Integer.parseInt(currentVersionSemantics[2]);
+            semantics.add(2,Integer.parseInt(versionNumbers[2]));
 
         }
 
-        newMajor = Integer.parseInt(newVersionSemantics[0]);
-        newMinor = Integer.parseInt(newVersionSemantics[0]);
-        if (newVersionSemantics[2].contains("-")) {
-            newPatch = Integer.parseInt(newVersionSemantics[2].split("-")[0]);
-        } else {
-            newPatch = Integer.parseInt(newVersionSemantics[0]);
-        }
-
-        return checkNewOrSame(newMajor,newMinor,newPatch,currentMajor,currentMinor,currentPatch);
+        return semantics;
     }
 
     /**
@@ -206,11 +200,11 @@ public abstract class VersionChecker {
      * @return Boolean. True if a new version was determined.
      */
     private boolean checkNew(int newMajor, int newMinor, int newPatch, int currentMajor, int currentMinor, int currentPatch) {
-        if (newMajor > currentMajor && newMinor == currentMinor && newPatch == currentPatch) {
+        if (newMajor > currentMajor) {
             // new major update
             return true;
 
-        } else if (newMajor == currentMajor && newMinor > currentMinor && newPatch == currentPatch) {
+        } else if (newMajor == currentMajor && newMinor > currentMinor) {
             // new minor update
             return true;
 
@@ -229,20 +223,25 @@ public abstract class VersionChecker {
      * @param currentMajor Integer. The old versions major number.
      * @param currentMinor Integer. The old versions minor number.
      * @param currentPatch Integer. The old versions patch number.
-     * @return Boolean. True if a new version was determined.
+     * @return Boolean. True if a new or equal version was determined.
      */
-    private boolean checkNewOrSame(int newMajor, int newMinor, int newPatch, int currentMajor, int currentMinor, int currentPatch) {
-        if (newMajor >= currentMajor && newMinor == currentMinor && newPatch == currentPatch) {
-            // new major update
-            return true;
+    private boolean checkNewOrEqual(int newMajor, int newMinor, int newPatch, int currentMajor, int currentMinor, int currentPatch) {
+        return newMajor >= currentMajor && newMinor >= currentMinor && newPatch >= currentPatch;
+    }
 
-        } else if (newMajor == currentMajor && newMinor >= currentMinor && newPatch == currentPatch) {
-            // new minor update
-            return true;
-
-            // new patch update if true
-        } else
-            return newMajor == currentMajor && newMinor == currentMinor && newPatch >= currentPatch;
+    /**
+     * Compare two versions against each other and determine whether they are the same semantic versions.
+     * @author Griefed
+     * @param newMajor Integer. The new versions major number.
+     * @param newMinor Integer. The new versions minor number.
+     * @param newPatch Integer. The new versions patch number.
+     * @param currentMajor Integer. The old versions major number.
+     * @param currentMinor Integer. The old versions minor number.
+     * @param currentPatch Integer. The old versions patch number.
+     * @return Boolean. True if the versions are the same.
+     */
+    private boolean checkEqual(int newMajor, int newMinor, int newPatch, int currentMajor, int currentMinor, int currentPatch) {
+        return newMajor == currentMajor && newMinor == currentMinor && newPatch == currentPatch;
     }
 
     /**
@@ -256,18 +255,29 @@ public abstract class VersionChecker {
     private boolean isNewAlphaAvailable(@NotNull String currentVersion) throws NumberFormatException {
 
         // If no alpha releases are available, do not check for new alpha release.
-        if (latestAlpha().equals("no_alphas")) return false;
+        if (latestAlpha().equals("no_alphas")) {
+            return false;
+        }
 
         String latestAlpha = latestAlpha();
 
-        // Check if the given version is older than the latest alpha version by checking semantically. (1.2.3, 2.3.4, 6.6.6)
-        if (isNewSemanticVersion(currentVersion, latestAlpha)) return true;
+        if (compareSemantics(currentVersion, latestAlpha, Comparison.EQUAL) && currentVersion.contains("beta")) {
+            return false;
+        }
 
-        if (currentVersion.contains("-")) {
+        // Check if the given version is older than the latest alpha version by checking semantically. (1.2.3, 2.3.4, 6.6.6)
+        if (compareSemantics(currentVersion, latestAlpha, Comparison.NEW)) {
+
+            return true;
+
+        } else if (compareSemantics(currentVersion, latestAlpha, Comparison.EQUAL_OR_NEW) && currentVersion.contains("-")) {
             // If a new alpha, say alpha.5 for the given, say alpha.1, is available, return true.
             return isPreReleaseNewer(currentVersion, latestAlpha);
+
         } else {
+
             return false;
+
         }
     }
 
@@ -282,17 +292,24 @@ public abstract class VersionChecker {
     private boolean isNewBetaAvailable(@NotNull String currentVersion) throws NumberFormatException {
 
         // If no beta releases are available, do not check for new beta release.
-        if (latestBeta().equals("no_betas")) return false;
+        if (latestBeta().equals("no_betas")) {
+            return false;
+        }
 
         String latestBeta = latestBeta();
 
         // Check if the given version is older than the latest beta version by checking semantically. (1.2.3, 2.3.4, 6.6.6)
-        if (isNewSemanticVersion(currentVersion, latestBeta)) return true;
+        if (compareSemantics(currentVersion, latestBeta, Comparison.NEW)) {
 
-        if (currentVersion.contains("-")) {
+            return true;
+
+        } else if (compareSemantics(currentVersion, latestBeta, Comparison.EQUAL_OR_NEW) && currentVersion.contains("-")) {
+
             // If a new beta, say beta.5 for the given, say beta.1, is available, return true.
             return isPreReleaseNewer(currentVersion, latestBeta);
+
         } else {
+
             return false;
         }
     }
@@ -387,7 +404,7 @@ public abstract class VersionChecker {
 
             for (String betaVersion : betaVersions) {
 
-                if (isNewOrSameSemanticVersion(beta, betaVersion) && isPreReleaseNewer(beta, betaVersion)) {
+                if (compareSemantics(beta, betaVersion, Comparison.EQUAL_OR_NEW) && isPreReleaseNewer(beta, betaVersion)) {
                     beta = betaVersion;
                 }
             }
@@ -416,7 +433,7 @@ public abstract class VersionChecker {
 
             for (String alphaVersion : alphaVersions) {
 
-                if (isNewOrSameSemanticVersion(alpha, alphaVersion) && isPreReleaseNewer(alpha, alphaVersion)) {
+                if (compareSemantics(alpha, alphaVersion, Comparison.EQUAL_OR_NEW) && isPreReleaseNewer(alpha, alphaVersion)) {
                     alpha = alphaVersion;
                 }
             }

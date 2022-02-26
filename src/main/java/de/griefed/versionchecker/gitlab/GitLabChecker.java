@@ -24,6 +24,7 @@
 package de.griefed.versionchecker.gitlab;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import de.griefed.versionchecker.Comparison;
 import org.jetbrains.annotations.NotNull;
 import de.griefed.versionchecker.VersionChecker;
 import org.apache.logging.log4j.LogManager;
@@ -103,7 +104,7 @@ public class GitLabChecker extends VersionChecker {
         LOG.debug("All versions: " + versions);
 
         // In case the given repository does not have any releases
-        if (versions == null || versions.size() == 0) {
+        if (versions.size() == 0) {
             return null;
         }
 
@@ -119,17 +120,51 @@ public class GitLabChecker extends VersionChecker {
     @Override
     public String latestVersion(boolean checkForPreRelease) {
 
-        for (String version : getAllVersions()) {
-            LOG.debug("version: " + version);
-            if (!version.contains("alpha") && !version.contains("beta")) {
-                return version;
+        if (getAllVersions() != null) {
+
+            String latest = null;
+
+            if (checkForPreRelease) {
+                latest = getAllVersions().get(0);
+            } else {
+                for (String version : getAllVersions()) {
+                    if (!version.contains("alpha") && !version.contains("beta")) {
+                        latest = version;
+                        break;
+                    }
+                }
             }
-        }
 
-        if (checkForPreRelease) {
-            if (!latestBeta().equals("no_betas")) return latestBeta();
+            if (latest == null) {
+                return "no_release";
+            }
 
-            if (!latestAlpha().equals("no_alphas")) return latestAlpha();
+            for (String version : getAllVersions()) {
+
+                LOG.debug("version: " + version);
+
+                if (!version.contains("alpha") && !version.contains("beta") && compareSemantics(latest, version, Comparison.NEW)) {
+
+                    latest = version;
+
+                }
+            }
+
+            if (checkForPreRelease) {
+
+                String alpha = latestAlpha();
+                String beta = latestBeta();
+
+                if (!beta.equals("no_betas") && compareSemantics(latest, beta, Comparison.NEW)) {
+                    latest = beta;
+                }
+
+                if (!alpha.equals("no_alphas") && compareSemantics(latest, alpha, Comparison.NEW)) {
+                    latest = alpha;
+                }
+            }
+
+            return latest;
         }
 
         return "no_release";
