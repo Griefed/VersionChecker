@@ -1,3 +1,23 @@
+### [1.0.7](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.6...1.0.7) (2022-02-26)
+
+
+### 🦊 CI/CD
+
+* **GitHub:** Fix paths for pre-release assets. Automatically generate changelog from git history. ([6ef66d9](https://git.griefed.de/Griefed/VersionChecker/commit/6ef66d93b090767d05ddccb3b5ab524ab23de33b))
+* **GitHub:** Fix paths for release assets. Automatically generate changelog from git history. ([c1fc6bd](https://git.griefed.de/Griefed/VersionChecker/commit/c1fc6bdd8629184c7811306953ae06c0a3d2f947))
+* **GitHub:** Remove artifacts which aren't being produced anyway ([2b8505a](https://git.griefed.de/Griefed/VersionChecker/commit/2b8505ad67fb56599ef145868a2dab9ddd1c24ae))
+
+
+### 🛠 Fixes
+
+* Fix regression bug introduced during last fix. Correctly acquire latest version from repository and correctly compare against other versions, preventing false positives and premature availability messages. ([6cfcecf](https://git.griefed.de/Griefed/VersionChecker/commit/6cfcecf2d7936cc6dd515dcb2d8839b29ea04286))
+
+
+### Other
+
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.6 ([f903116](https://git.griefed.de/Griefed/VersionChecker/commit/f90311660e53e839cd88a366e35da8fcf7e75f88))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.3 ([b560503](https://git.griefed.de/Griefed/VersionChecker/commit/b5605032a9669f4f70fdfcac0d5712ac58894667))
+
 ### [1.0.6](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.5...1.0.6) (2022-02-24)
 
 
