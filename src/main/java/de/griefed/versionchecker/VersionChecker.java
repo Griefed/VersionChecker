@@ -102,7 +102,14 @@ public abstract class VersionChecker {
         }
 
         if (compareSemantics(currentVersion, latestVersion(checkForPreReleases), Comparison.NEW)) {
+
             return latestVersion(checkForPreReleases);
+
+        } else if (currentVersion.matches("\\d+\\.\\d+\\.\\d+-(alpha|beta)\\.\\d+") &&
+                compareSemantics(currentVersion, latestVersion(false), Comparison.EQUAL)) {
+
+            return latestVersion(false);
+
         }
 
         return "up_to_date";
