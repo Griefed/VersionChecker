@@ -1,3 +1,27 @@
+### [1.0.8](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.7...1.0.8) (2022-03-23)
+
+
+### 🦊 CI/CD
+
+* **GitHub:** Fix release asset path ([009c4d2](https://git.griefed.de/Griefed/VersionChecker/commit/009c4d24cbefe9787f300130e0fc935704884465))
+
+
+### 🛠 Fixes
+
+* When an alpha or beta for the latest release is used, return the latest release as the available update. Example: 1.2.5-alpha.1 -> 1.2.5 and 1.2.5-beta.1 -> 1.2.5 ([45a6296](https://git.griefed.de/Griefed/VersionChecker/commit/45a6296b68d5df3c98cf6e362306543bf3fc3d98))
+
+
+### Other
+
+* **deps:** update actions/setup-java action to v3 ([47235d4](https://git.griefed.de/Griefed/VersionChecker/commit/47235d483f2a4e61588c9821c907121b29262614))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.7 ([74de493](https://git.griefed.de/Griefed/VersionChecker/commit/74de49380198a9c4c9c011aaba89730d7c8ac996))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.4 ([4cde6ba](https://git.griefed.de/Griefed/VersionChecker/commit/4cde6ba496d38f460e633e8ef899ebee1137f0be))
+* **deps:** update dependency gradle to v7.4 ([97b1ff0](https://git.griefed.de/Griefed/VersionChecker/commit/97b1ff004b4a97e20dec516cfd0586dd24ddb7e8))
+* **deps:** update dependency griefed/baseimage-ubuntu-jdk-8 to v2.0.6 ([e8f363b](https://git.griefed.de/Griefed/VersionChecker/commit/e8f363b75fe62baa3825709e98ac5523812fe374))
+* **deps:** update dependency griefed/gitlab-ci-cd to v2.0.3 ([94d7d29](https://git.griefed.de/Griefed/VersionChecker/commit/94d7d29b44285073039bc18d27c5aef0ba5341df))
+* **deps:** update dependency org.jetbrains:annotations to v23 ([4254cab](https://git.griefed.de/Griefed/VersionChecker/commit/4254cab598455dd1ee8be64ae08a307b13ff9657))
+* **deps:** update jamesives/github-pages-deploy-action action to v4.2.5 ([413eeb2](https://git.griefed.de/Griefed/VersionChecker/commit/413eeb2256d6772a0fe44b6218dbc6ab2c620b22))
+
 ### [1.0.7](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.6...1.0.7) (2022-02-26)
 
 
