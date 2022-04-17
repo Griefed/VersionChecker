@@ -23,20 +23,43 @@
  */
 package de.griefed.versionchecker;
 
-public enum Comparison {
+import java.net.URL;
+
+/**
+ * A release asset is usually some form of compiled program or library.
+ * @author Griefed
+ */
+public class ReleaseAsset {
+
+    private final String ASSET_NAME;
+    private final URL ASSET_URL;
 
     /**
-     * Used to determine whether two given versions are the same.
+     * Create a new release asset from an asset name and the {@link URL} to said asset download.
+     * @author Griefed
+     * @param assetName {@link String} Asset name.
+     * @param assetURL {@link URL} Asset download URL.
      */
-    EQUAL,
+    public ReleaseAsset(String assetName, URL assetURL) {
+        this.ASSET_NAME = assetName;
+        this.ASSET_URL = assetURL;
+    }
 
     /**
-     * Used to determine whether a given version is newer.
+     * Get the name of this asset. Usually a filename.
+     * @author Griefed
+     * @return {@link String} The name of this asset. Usually a filename.
      */
-    NEW,
+    public String name() {
+        return ASSET_NAME;
+    }
 
     /**
-     * Used to determine whether a given version is the same or newer.
+     * Get the download-{@link URL} to this asset.
+     * @author Griefed
+     * @return Download-{@link URL} to this asset.
      */
-    EQUAL_OR_NEW
+    public URL url() {
+        return ASSET_URL;
+    }
 }

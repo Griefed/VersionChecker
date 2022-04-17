@@ -23,20 +23,44 @@
  */
 package de.griefed.versionchecker;
 
-public enum Comparison {
+import java.net.URL;
+
+/**
+ * A source-archive is the source code of the repository for the tag of the parent-release. It represents the state of the
+ * code at the time of the release.
+ * @author Griefed
+ */
+public class Source {
+
+    private final ArchiveType ARCHIVE_TYPE;
+    private final URL ARCHIVE_URL;
 
     /**
-     * Used to determine whether two given versions are the same.
+     * Create a new source from an {@link ArchiveType} and the download-{@link URL} to this archive.
+     * @author Griefed
+     * @param archiveType {@link ArchiveType} Archive type of this source.
+     * @param archiveURL {@link URL} Download url for this source.
      */
-    EQUAL,
+    public Source(ArchiveType archiveType, URL archiveURL) {
+        this.ARCHIVE_TYPE = archiveType;
+        this.ARCHIVE_URL = archiveURL;
+    }
 
     /**
-     * Used to determine whether a given version is newer.
+     * Get the {@link ArchiveType} of this source.
+     * @author Griefed
+     * @return {@link ArchiveType} of this source.
      */
-    NEW,
+    public ArchiveType type() {
+        return ARCHIVE_TYPE;
+    }
 
     /**
-     * Used to determine whether a given version is the same or newer.
+     * Get the download-{@link URL} for this source.
+     * @author Griefed
+     * @return Download-{@link URL} for this source.
      */
-    EQUAL_OR_NEW
+    public URL url() {
+        return ARCHIVE_URL;
+    }
 }

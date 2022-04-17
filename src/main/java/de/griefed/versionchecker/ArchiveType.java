@@ -23,20 +23,30 @@
  */
 package de.griefed.versionchecker;
 
-public enum Comparison {
+/**
+ * Archive types available throughout GitLab or GitHub releases.
+ * @author Griefed
+ */
+public enum ArchiveType {
 
     /**
-     * Used to determine whether two given versions are the same.
+     * Indicates that a given archive has the <code>.zip</code>-format.
      */
-    EQUAL,
+    ZIP,
 
     /**
-     * Used to determine whether a given version is newer.
+     * Indicates that a given archive has the <code>.tar.gz</code>-format.
      */
-    NEW,
+    TAR_GZ,
 
     /**
-     * Used to determine whether a given version is the same or newer.
+     * Indicates that a given archive has the <code>.tar.bz2</code>-format.
      */
-    EQUAL_OR_NEW
+    TAR_BZ2,
+
+    /**
+     * Indicates that a given archive has the <code>.tar</code>-format.
+     */
+    TAR
+
 }

@@ -21,20 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package de.griefed.versionchecker.github;
+package de.griefed.versionchecker;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.griefed.versionchecker.Comparison;
 import org.jetbrains.annotations.NotNull;
-import de.griefed.versionchecker.VersionChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Check a given GitHub repository for updates.<br>
@@ -70,6 +70,19 @@ public class GitHubChecker extends VersionChecker {
     }
 
     /**
+     * Constructs a GitHub checker with the given <code>user/repository</code> combination to allow for version checks as
+     * well as version and URL acquisition.
+     * @author Griefed
+     * @param user {@link String} GitHub user and owner of the repository.
+     * @param repository  {@link String} GitHub repository owned by the aforementioned user.
+     * @throws MalformedURLException Thrown if the resulting URL is malformed or otherwise invalid.
+     */
+    public GitHubChecker(@NotNull String user, @NotNull String repository) throws MalformedURLException {
+        this.GITHUB_API = new URL("https://api.github.com/repos/" + user + "/" + repository + "/releases");
+        this.GITHUB_API_LATEST = new URL("https://api.github.com/repos/" + user + "/" + repository + "/releases/latest");
+    }
+
+    /**
      * Refresh this GitHub-instance. Refreshes repository information, the latest version, as well as a list of all available
      * versions.
      * @author Griefed
@@ -83,6 +96,91 @@ public class GitHubChecker extends VersionChecker {
         setAllVersions();
 
         return this;
+    }
+
+    /**
+     * Check whether an update/newer version is available for the given version. If you want to check for PreReleases, too,
+     * then make sure to pass <code>true</code> for <code>checkForPreReleases</code>.
+     * @author Griefed
+     * @param currentVersion String. The current version of the app.
+     * @param checkForPreReleases Boolean. <code>false</code> if you do not want to check for PreReleases. <code>true</code>
+     *                            if you want to check for PreReleases as well.
+     * @return {@link Update}-instance, wrapped in an {@link Optional}, contianing information about the available update.
+     */
+    @Override
+    public Optional<Update> check(@NotNull String currentVersion, boolean checkForPreReleases) {
+        LOG.debug("Current version: " + currentVersion);
+
+        try {
+
+            String newVersion = isUpdateAvailable(currentVersion, checkForPreReleases);
+
+            if (!newVersion.equals("up_to_date")) {
+
+                String description = "N/A";
+                LocalDate releaseDate = null;
+                List<ReleaseAsset> assets = new ArrayList<>();
+                List<Source> sources = new ArrayList<>();
+
+                for (JsonNode release : repository) {
+
+                    if (release.get("tag_name").asText().equals(newVersion)) {
+
+                        description = release.get("body").asText();
+
+                        releaseDate = LocalDate.parse(release.get("published_at").asText()
+                                .substring(0,release.get("published_at").asText().lastIndexOf("T"))
+                        );
+
+                        for (JsonNode asset : release.get("assets")) {
+
+                            assets.add(
+                                    new ReleaseAsset(
+                                        asset.get("name").asText(),
+                                        new URL(asset.get("browser_download_url").asText())
+                                )
+                            );
+
+                        }
+
+                        sources.add(
+                                new Source(
+                                    ArchiveType.TAR_GZ,
+                                    new URL(release.get("tarball_url").asText())
+                                )
+                        );
+
+                        sources.add(
+                                new Source(
+                                    ArchiveType.ZIP,
+                                    new URL(release.get("zipball_url").asText())
+                                )
+                        );
+
+                        break;
+                    }
+                }
+
+                return Optional.of(
+                        new Update(
+                                newVersion,
+                                description,
+                                new URL(getDownloadUrl(newVersion)),
+                                releaseDate,
+                                assets,
+                                sources
+                        )
+                );
+
+            }
+
+        } catch (NumberFormatException ex) {
+            LOG.error("A version could not be parsed into integers.", ex);
+        } catch (MalformedURLException ex) {
+            LOG.error("URL could not be created.",ex);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -193,7 +291,11 @@ public class GitHubChecker extends VersionChecker {
      * @author Griefed
      * @param requestedVersion String. The version you want to retrieve the asset download URLs for.
      * @return List String. A list of download URLs for the assets of the given tag/version.
+     * @deprecated The aim of VersionChecker is not to browse a given repository, but to check for availability of updates,
+     * and if an update is available, work from there. See {@link #check(String, boolean)} which returns an instance of
+     * {@link Update}. This provides everything you need.
      */
+    @Deprecated
     @Override
     public List<String> getAssetsDownloadUrls(@NotNull String requestedVersion) {
 

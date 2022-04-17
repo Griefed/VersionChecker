@@ -1,7 +1,5 @@
 package de.griefed.versionchecker;
 
-import de.griefed.versionchecker.github.GitHubChecker;
-import de.griefed.versionchecker.gitlab.GitLabChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -17,16 +15,11 @@ public class UpdateCheckerTests {
     private GitLabChecker GITGRIEFED;
     private GitLabChecker GITLAB;
 
-    //private GitHubChecker tests;
-
     public UpdateCheckerTests() throws IOException {
 
         this.GITHUB = new GitHubChecker("Griefed/ServerPackCreator");
         this.GITLAB = new GitLabChecker("https://gitlab.com/api/v4/projects/32677538/releases");
         this.GITGRIEFED = new GitLabChecker("https://git.griefed.de/api/v4/projects/63/releases");
-
-        //this.tests = new GitHubChecker("Griefed/Action_tests");
-        //this.tests.refresh();
     }
 
     @Test
@@ -183,15 +176,6 @@ public class UpdateCheckerTests {
 
 
 
-        /*System.out.println("Old beta, but newer than the newest regular release, should return no available updates, whilst not checking for pre-releases.");
-        Assertions.assertEquals(
-                "No updates available.",
-                checkForUpdate(
-                        "3.0.0-beta.2",
-                        false
-                )
-        );*/
-
         System.out.println("Old beta, but newer than the newest regular release, should the latest available alpha/beta, whilst checking for pre-releases, too.");
         Assertions.assertEquals(
                 latestPre,
@@ -201,15 +185,6 @@ public class UpdateCheckerTests {
                 ).split(";")[0]);
 
 
-
-        /*System.out.println("Old beta, but newer than the newest regular release, should return no available updates, whilst not checking for pre-releases.");
-        Assertions.assertEquals(
-                "No updates available.",
-                checkForUpdate(
-                        "3.0.0-alpha.2",
-                        false
-                )
-        );*/
 
         System.out.println("Old alpha, but newer than the newest regular release, should return the newest alpha/beta, whilst checking for pre-releases, too.");
         Assertions.assertEquals(
@@ -336,59 +311,68 @@ public class UpdateCheckerTests {
                 ).split(";")[0]);
 
 
-        /*System.out.println(tests.latestVersion(false));
-        System.out.println("Beta for latest version should return latest version as available update, whilst not checking for pre-releases.");
-        Assertions.assertEquals(
-                "1.2.5",
-                testChecker(
-                        "1.2.5-beta.1",
-                        false
-                ).split(";")[0]);
 
-        System.out.println("Beta for latest version should return latest version as available update.");
-        Assertions.assertEquals(
-                "1.2.5",
-                testChecker(
-                        "1.2.5-beta.1",
-                        true
-                ).split(";")[0]);
+        System.out.println("Update-instance from GitLab");
+        Assertions.assertTrue(GITLAB.check("2.0.0",false).isPresent());
+        Assertions.assertFalse(GITLAB.check(latest,false).isPresent());
+        Update gitLabUpdate = GITLAB.check("2.0.0",false).get();
+        Assertions.assertEquals(gitLabUpdate.version(), latest);
+        Assertions.assertNotNull(gitLabUpdate.description());
+        Assertions.assertNotNull(gitLabUpdate.url());
+        Assertions.assertNotNull(gitLabUpdate.releaseDate());
+        Assertions.assertNotEquals(0, gitLabUpdate.assets().get().size());
+        gitLabUpdate.assets().get().forEach(asset -> {
+            Assertions.assertNotNull(asset.name());
+            Assertions.assertNotNull(asset.url());
+        });
+        Assertions.assertTrue(gitLabUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".exe").isPresent());
+        Assertions.assertTrue(gitLabUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".jar").isPresent());
+        Assertions.assertNotEquals(0, gitLabUpdate.sources().size());
+        gitLabUpdate.sources().forEach(source -> {
+            Assertions.assertNotNull(source.type());
+            Assertions.assertNotNull(source.url());
+        });
+        Assertions.assertNotNull(gitLabUpdate.sourceZip());
+        Assertions.assertSame(gitLabUpdate.sourceZip().type(), ArchiveType.ZIP);
+        Assertions.assertNotNull(gitLabUpdate.sourceTarGz());
+        Assertions.assertSame(gitLabUpdate.sourceTarGz().type(), ArchiveType.TAR_GZ);
+        Assertions.assertTrue(gitLabUpdate.sourceTar().isPresent());
+        Assertions.assertSame(gitLabUpdate.sourceTar().get().type(), ArchiveType.TAR);
+        Assertions.assertTrue(gitLabUpdate.sourceTarBz2().isPresent());
+        Assertions.assertSame(gitLabUpdate.sourceTarBz2().get().type(), ArchiveType.TAR_BZ2);
 
 
 
-        System.out.println("Alpha for latest version should return latest version as available update.");
-        Assertions.assertEquals(
-                "1.2.5",
-                testChecker(
-                        "1.2.5-alpha.1",
-                        false
-                ).split(";")[0]);
 
-        System.out.println("Alpha for latest version should return latest version as available update.");
-        Assertions.assertEquals(
-                "1.2.5",
-                testChecker(
-                        "1.2.5-alpha.1",
-                        true
-                ).split(";")[0]);*/
+        System.out.println("Update-instance from GitHub");
+        Assertions.assertTrue(GITLAB.check("2.0.0",false).isPresent());
+        Assertions.assertFalse(GITLAB.check(latest,false).isPresent());
+        Update gitHubUpdate = GITHUB.check("2.0.0",false).get();
+        Assertions.assertEquals(gitHubUpdate.version(), latest);
+        Assertions.assertNotNull(gitHubUpdate.description());
+        Assertions.assertNotNull(gitHubUpdate.url());
+        Assertions.assertNotNull(gitHubUpdate.releaseDate());
+        Assertions.assertNotEquals(0, gitHubUpdate.assets().get().size());
+        gitHubUpdate.assets().get().forEach(asset -> {
+            Assertions.assertNotNull(asset.name());
+            Assertions.assertNotNull(asset.url());
+        });
+        Assertions.assertTrue(gitHubUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".exe").isPresent());
+        Assertions.assertTrue(gitHubUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".jar").isPresent());
+        Assertions.assertNotEquals(0, gitHubUpdate.sources().size());
+        gitHubUpdate.sources().forEach(source -> {
+            Assertions.assertNotNull(source.type());
+            Assertions.assertNotNull(source.url());
+        });
+        Assertions.assertNotNull(gitHubUpdate.sourceZip());
+        Assertions.assertSame(gitHubUpdate.sourceZip().type(), ArchiveType.ZIP);
+        Assertions.assertNotNull(gitHubUpdate.sourceTarGz());
+        Assertions.assertSame(gitHubUpdate.sourceTarGz().type(), ArchiveType.TAR_GZ);
+        Assertions.assertFalse(gitHubUpdate.sourceTar().isPresent());
+        Assertions.assertFalse(gitHubUpdate.sourceTarBz2().isPresent());
+
+
     }
-
-    /*private String testChecker(String version, boolean pre) {
-        String updater = null;
-
-        // Check GitHub for the most recent release.
-        if (tests != null) {
-
-            // Check GitHub for new versions which are not pre-releases. Run with true to check pre-releases as well.
-            updater = tests.checkForUpdate(version, pre);
-        }
-
-        System.out.println("Check pre:       " + pre    );
-        System.out.println("Checked version: " + version);
-        System.out.println("Result:          " + updater);
-        System.out.println();
-
-        return updater;
-    }*/
 
     private String checkForUpdate(String version, boolean pre) {
 

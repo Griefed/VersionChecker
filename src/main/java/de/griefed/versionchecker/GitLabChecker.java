@@ -21,20 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package de.griefed.versionchecker.gitlab;
+package de.griefed.versionchecker;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import de.griefed.versionchecker.Comparison;
 import org.jetbrains.annotations.NotNull;
-import de.griefed.versionchecker.VersionChecker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Check a given GitLab repository for updates.<br>
@@ -69,6 +69,18 @@ public class GitLabChecker extends VersionChecker {
     }
 
     /**
+     * Constructs a GitLab checker with the given GitLab-URL to allow for version checks as well as version and URL
+     * acquisition.
+     * @author Griefed
+     * @param repositoryUrl {@link URL}. The full /api/v4-GitLab-repository-URL you want to check. Examples:<br>
+     *                   <code>https://gitlab.com/api/v4/projects/32677538/releases</code><br>
+     *                   <code>https://git.griefed.de/api/v4/projects/63/releases</code>
+     */
+    public GitLabChecker(@NotNull URL repositoryUrl) {
+        this.GITLAB_API = repositoryUrl;
+    }
+
+    /**
      * Refresh this GitLab-instance. Refreshes repository information and the list of all available versions.
      * @author Griefed
      * @throws IOException Exception thrown if {@link #setRepository()} encounters an error.
@@ -80,6 +92,105 @@ public class GitLabChecker extends VersionChecker {
         setAllVersions();
 
         return this;
+    }
+
+    /**
+     * Check whether an update/newer version is available for the given version. If you want to check for PreReleases, too,
+     * then make sure to pass <code>true</code> for <code>checkForPreReleases</code>.
+     * @author Griefed
+     * @param currentVersion String. The current version of the app.
+     * @param checkForPreReleases Boolean. <code>false</code> if you do not want to check for PreReleases. <code>true</code>
+     *                            if you want to check for PreReleases as well.
+     * @return {@link Update}-instance, wrapped in an {@link Optional}, contianing information about the available update.
+     */
+    @Override
+    public Optional<Update> check(@NotNull String currentVersion, boolean checkForPreReleases) {
+        LOG.debug("Current version: " + currentVersion);
+
+        try {
+
+            String newVersion = isUpdateAvailable(currentVersion, checkForPreReleases);
+
+            if (!newVersion.equals("up_to_date")) {
+
+                String description = "N/A";
+                LocalDate releaseDate = null;
+                List<ReleaseAsset> assets = new ArrayList<>();
+                List<Source> sources = new ArrayList<>();
+
+                for (JsonNode release : repository) {
+
+                    if (release.get("tag_name").asText().equals(newVersion)) {
+
+                        description = release.get("description").asText();
+
+                        releaseDate = LocalDate.parse(release.get("released_at").asText()
+                                .substring(0, release.get("released_at").asText().lastIndexOf("T"))
+                        );
+
+                        for (JsonNode asset : release.get("assets").get("links")) {
+
+                            assets.add(
+                                    new ReleaseAsset(
+                                            asset.get("name").asText(),
+                                            new URL(asset.get("direct_asset_url").asText())
+                                    )
+                            );
+
+                        }
+
+                        for (JsonNode source : release.get("assets").get("sources")) {
+
+                            ArchiveType type = null;
+
+                            switch (source.get("format").asText()) {
+                                case "zip":
+                                    type = ArchiveType.ZIP;
+                                    break;
+                                case "tar.gz":
+                                    type = ArchiveType.TAR_GZ;
+                                    break;
+                                case "tar.bz2":
+                                    type = ArchiveType.TAR_BZ2;
+                                    break;
+                                case "tar":
+                                    type = ArchiveType.TAR;
+                                    break;
+                            }
+
+                            sources.add(
+                                    new Source(
+                                            type,
+                                            new URL(source.get("url").asText())
+                                    )
+                            );
+
+                        }
+
+                        break;
+                    }
+                }
+
+                return Optional.of(
+                        new Update(
+                                newVersion,
+                                description,
+                                new URL(getDownloadUrl(newVersion)),
+                                releaseDate,
+                                assets,
+                                sources
+                        )
+                );
+
+            }
+
+        } catch (NumberFormatException ex) {
+            LOG.error("A version could not be parsed into integers.", ex);
+        } catch (MalformedURLException ex) {
+            LOG.error("URL could not be created.",ex);
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -205,7 +316,11 @@ public class GitLabChecker extends VersionChecker {
      * @author Griefed
      * @param requestedVersion String. The version you want to retrieve the asset download URLs for.
      * @return List String. A list of download URLs for the assets of the given tag/version.
+     * @deprecated The aim of VersionChecker is not to browse a given repository, but to check for availability of updates,
+     * and if an update is available, work from there. See {@link #check(String, boolean)} which returns an instance of
+     * {@link Update}. This provides everything you need.
      */
+    @Deprecated
     @Override
     public List<String> getAssetsDownloadUrls(@NotNull String requestedVersion) {
 

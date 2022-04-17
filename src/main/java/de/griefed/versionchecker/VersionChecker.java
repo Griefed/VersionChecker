@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Baseclass from wich GitHub and GitLab checks extend. This class mainly provides the logic for comparing versions against
@@ -89,7 +90,7 @@ public abstract class VersionChecker {
      *                            if you want to check for PreReleases as well.
      * @return String. Returns the available update version. If no update is available, then <code>up_to_date</code> is returned.
      */
-    private String isUpdateAvailable(@NotNull String currentVersion, boolean checkForPreReleases) {
+    protected String isUpdateAvailable(@NotNull String currentVersion, boolean checkForPreReleases) {
 
         if (checkForPreReleases) {
             if (isNewBetaAvailable(currentVersion)) {
@@ -507,6 +508,8 @@ public abstract class VersionChecker {
 
     protected abstract void setRepository() throws IOException;
 
+    @Deprecated
     public abstract List<String> getAssetsDownloadUrls(@NotNull String version);
 
+    public abstract Optional<Update> check(@NotNull String currentVersion, boolean checkForPreReleases);
 }
