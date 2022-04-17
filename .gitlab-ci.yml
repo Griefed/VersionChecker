@@ -105,7 +105,7 @@ Generate Release:
       artifacts: false
     - job: secret_detection
       artifacts: false
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.4
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.5
   script:
     - npx semantic-release
   rules:
@@ -155,7 +155,7 @@ Build Release:
 
 Publish Maven Artifacts:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.7
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.8
   before_script:
     - echo "**** Running in $CI_JOB_ID ****"
     - echo "**** Java location ****"
@@ -175,7 +175,7 @@ Publish Maven Artifacts:
 
 Inform About Release:
   stage: Build Release
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.4
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.5
   needs:
     - job: Build Release
       artifacts: false
