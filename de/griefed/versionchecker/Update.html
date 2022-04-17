@@ -192,19 +192,19 @@ extends java.lang.Object</pre>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>java.util.Optional&lt;<a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../de/griefed/versionchecker/Update.html#sourceTar--">sourceTar</a></span>()</code>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar-archive-source of this update.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>java.util.Optional&lt;<a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../de/griefed/versionchecker/Update.html#sourceTarBz2--">sourceTarBz2</a></span>()</code>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar.bz2-archive-source of this update.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../de/griefed/versionchecker/Update.html#sourceTarGz--">sourceTarGz</a></span>()</code>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar.gz-archive-source of this update.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
@@ -390,10 +390,10 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>sourceTarGz</h4>
 <pre>public&nbsp;<a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a>&nbsp;sourceTarGz()</pre>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar.gz-archive-source of this update.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#ZIP"><code>ArchiveType.ZIP</code></a> of this update.</dd>
+<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#TAR_GZ"><code>ArchiveType.TAR_GZ</code></a> of this update.</dd>
 </dl>
 </li>
 </ul>
@@ -404,10 +404,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>sourceTar</h4>
 <pre>public&nbsp;java.util.Optional&lt;<a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a>&gt;&nbsp;sourceTar()</pre>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar-archive-source of this update. A tar-archive is usually only available for GitLab updates. GitHub typically
+ only provides zip- and tar.gz-archives.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#ZIP"><code>ArchiveType.ZIP</code></a> of this update, wrapped in an <code>Optional</code>.</dd>
+<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#TAR"><code>ArchiveType.TAR</code></a> of this update, wrapped in an <code>Optional</code>.</dd>
 </dl>
 </li>
 </ul>
@@ -418,10 +419,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>sourceTarBz2</h4>
 <pre>public&nbsp;java.util.Optional&lt;<a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker">Source</a>&gt;&nbsp;sourceTarBz2()</pre>
-<div class="block">Get the ZIP-archive-source of this update.</div>
+<div class="block">Get the tar.bz2-archive-source of this update. A tar.bz2-archive is usually only available for GitLab updates. GitHub typically
+ only provides zip- and tar.gz-archives.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#ZIP"><code>ArchiveType.ZIP</code></a> of this update, wrapped in an <code>Optional</code>.</dd>
+<dd><a href="../../../de/griefed/versionchecker/Source.html" title="class in de.griefed.versionchecker"><code>Source</code></a> of <a href="../../../de/griefed/versionchecker/ArchiveType.html#TAR_BZ2"><code>ArchiveType.TAR_BZ2</code></a> of this update, wrapped in an <code>Optional</code>.</dd>
 </dl>
 </li>
 </ul>
