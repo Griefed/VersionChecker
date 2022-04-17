@@ -1,3 +1,23 @@
+## [1.1.0](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.8...1.1.0) (2022-04-17)
+
+
+### 📔 Docs
+
+* **Examples:** Provide an example for the usage of the new Update-object in the README and expand sourceTar and sourceTarBz2 methods descriptions on when they are available. ([9af7137](https://git.griefed.de/Griefed/VersionChecker/commit/9af7137a16eeed543795426c2825867bf400e398))
+
+
+### 🚀 Features
+
+* **Update acquisition:** Acquire an instance of Update via `check(...)` which contains information about the available update, such as the version, description, sources, assets(if any), release date and url to the release. ([d20f1c7](https://git.griefed.de/Griefed/VersionChecker/commit/d20f1c7ef362222a5d061a47e0a12f278ad2f160))
+
+
+### Other
+
+* **deps:** update dependency com.fasterxml.jackson.core:jackson-databind to v2.13.2.2 ([93e475d](https://git.griefed.de/Griefed/VersionChecker/commit/93e475d5b18114c42c452e417ed1c270cad9ead6))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.8 ([cc83427](https://git.griefed.de/Griefed/VersionChecker/commit/cc83427d8a7e618e5e282cdd081d259724ae8f75))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.5 ([92e8fcc](https://git.griefed.de/Griefed/VersionChecker/commit/92e8fcc0a8772b5af985b44568f8f08c889745e7))
+* **deps:** update dependency gradle to v7.4.2 ([09c1c5a](https://git.griefed.de/Griefed/VersionChecker/commit/09c1c5ad3be80b9b945b41a0655eabe965c91931))
+
 ### [1.0.8](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.7...1.0.8) (2022-03-23)
 
 
