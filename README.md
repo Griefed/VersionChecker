@@ -61,9 +61,53 @@ implementation 'de.griefed:versionchecker:$VERSION'
 
 For available versions, see the [sonatype repo](https://search.maven.org/artifact/de.griefed/versionchecker/)
 
-# Example
+# Examples
 
 See [UpdateCheckerTests](src/test/java/de/griefed/versionchecker/UpdateCheckerTests.java)
+
+The simplest way to acquire update information is to call `.check(...)` of your GitHub- or GitHubChecker instances with your current version.
+This will return an instance of [Update](https://github.com/Griefed/VersionChecker/blob/main/src/main/java/de/griefed/versionchecker/Update.java) which contains
+details about the available update. It is wrapped in an Optional, so you can conveniently check via `.isPresent()` if an update is available.
+
+Once an instance of [Update](https://github.com/Griefed/VersionChecker/blob/main/src/main/java/de/griefed/versionchecker/Update.java) has been retrieved,
+you can access information about it via any of the available methods.
+
+Example:
+
+```java
+GitHubChecker GITHUB = new GitHubChecker("Griefed/ServerPackCreator");
+
+Optional<Update> gitHubUpdate = GITHUB.check("3.0.1",false);
+if (gitHubUpdate.isPresent()) {
+    
+    // Gets the version of this update as a String.
+    gitHubUpdate.get().version();
+    
+    // Check whether the update has a description
+    if (gitHubUpdate.get().description().isPresent()) {
+        
+        // Get the description
+        gitHubUpdate.get().description().get();
+    }
+    
+    // Get the url to the release page of this update
+    gitHubUpdate.get().url();
+    
+    // Get the date at which this update has been released.
+    gitHubUpdate.get().releaseDate();
+    
+    // Check if the update has any assets attached to it
+    if (gitHubUpdate.get().assets().isPresent()) {
+        
+        // Get the available assets of this update
+        gitHubUpdate.get().assets().get();
+    }
+    
+    // Get the available source-archives of this update
+    gitHubUpdate.get().sources();
+}
+
+```
 
 ```java
 public class UpdateChecker {

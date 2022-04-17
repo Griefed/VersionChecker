@@ -146,9 +146,9 @@ public class Update {
     }
 
     /**
-     * Get the ZIP-archive-source of this update.
+     * Get the tar.gz-archive-source of this update.
      * @author Griefed
-     * @return {@link Source} of {@link ArchiveType#ZIP} of this update.
+     * @return {@link Source} of {@link ArchiveType#TAR_GZ} of this update.
      */
     public Source sourceTarGz() {
         for (Source source : SOURCES) {
@@ -160,9 +160,10 @@ public class Update {
     }
 
     /**
-     * Get the ZIP-archive-source of this update.
+     * Get the tar-archive-source of this update. A tar-archive is usually only available for GitLab updates. GitHub typically
+     * only provides zip- and tar.gz-archives.
      * @author Griefed
-     * @return {@link Source} of {@link ArchiveType#ZIP} of this update, wrapped in an {@link Optional}.
+     * @return {@link Source} of {@link ArchiveType#TAR} of this update, wrapped in an {@link Optional}.
      */
     public Optional<Source> sourceTar() {
         for (Source source : SOURCES) {
@@ -174,9 +175,10 @@ public class Update {
     }
 
     /**
-     * Get the ZIP-archive-source of this update.
+     * Get the tar.bz2-archive-source of this update. A tar.bz2-archive is usually only available for GitLab updates. GitHub typically
+     * only provides zip- and tar.gz-archives.
      * @author Griefed
-     * @return {@link Source} of {@link ArchiveType#ZIP} of this update, wrapped in an {@link Optional}.
+     * @return {@link Source} of {@link ArchiveType#TAR_BZ2} of this update, wrapped in an {@link Optional}.
      */
     public Optional<Source> sourceTarBz2() {
         for (Source source : SOURCES) {
