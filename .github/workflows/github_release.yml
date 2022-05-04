@@ -59,13 +59,13 @@ jobs:
       - name: List files
         run: ls -ahl build/libs
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: build-artifacts-gradle
           path: |
             build/libs/
           if-no-files-found: warn # 'warn' or 'ignore' are also available, defaults to `warn`
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: report
