@@ -105,7 +105,7 @@ Generate Release:
       artifacts: false
     - job: secret_detection
       artifacts: false
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.5
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.6
   script:
     - npx semantic-release
   rules:
@@ -175,7 +175,7 @@ Publish Maven Artifacts:
 
 Inform About Release:
   stage: Build Release
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.5
+  image: ghcr.io/griefed/gitlab-ci-cd:2.0.6
   needs:
     - job: Build Release
       artifacts: false
