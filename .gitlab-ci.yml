@@ -16,7 +16,7 @@ variables:
   SECRET_DETECTION_EXCLUDED_PATHS: ""
 
 services:
-  - name: griefed/gitlab-ci-cd:2.0.6
+  - name: griefed/gitlab-ci-cd:2.0.8
     alias: docker
 
 sast:
