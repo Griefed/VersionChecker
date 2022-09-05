@@ -163,7 +163,7 @@ Build Release:
 
 Publish Maven Artifacts:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.12
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.13
   before_script:
     - echo "**** Running in $CI_JOB_ID ****"
     - echo "**** Java location ****"
