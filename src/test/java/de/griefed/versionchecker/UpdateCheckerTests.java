@@ -13,12 +13,10 @@ public class UpdateCheckerTests {
 
     private GitHubChecker GITHUB;
     private GitLabChecker GITGRIEFED;
-    private GitLabChecker GITLAB;
 
     public UpdateCheckerTests() throws IOException {
 
         this.GITHUB = new GitHubChecker("Griefed/ServerPackCreator");
-        this.GITLAB = new GitLabChecker("https://gitlab.com/api/v4/projects/32677538/releases");
         this.GITGRIEFED = new GitLabChecker("https://git.griefed.de/api/v4/projects/63/releases");
     }
 
@@ -29,12 +27,6 @@ public class UpdateCheckerTests {
         } catch (Exception ex) {
             LOG.error("Error refreshing GitHub.", ex);
             this.GITHUB = null;
-        }
-        try {
-            Assertions.assertNotNull(this.GITLAB.refresh());
-        } catch (Exception ex) {
-            LOG.error("Error refreshing GitLab.", ex);
-            this.GITLAB = null;
         }
         try {
             Assertions.assertNotNull(this.GITGRIEFED.refresh());
@@ -58,23 +50,6 @@ public class UpdateCheckerTests {
                     this.GITHUB = null;
                 }
             } while (GITHUB == null);
-        }
-
-        if (GITLAB == null) {
-            do {
-                try {
-                    Thread.sleep(300000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    Assertions.assertNotNull(this.GITLAB.refresh());
-                } catch (Exception ex) {
-                    LOG.error("Error refreshing GitLab.", ex);
-                    this.GITLAB = null;
-                }
-            } while (GITLAB == null);
         }
 
         if (GITGRIEFED == null) {
@@ -101,13 +76,6 @@ public class UpdateCheckerTests {
         GITHUB.allVersions();
         Assertions.assertNotNull(GITHUB.getDownloadUrl("2.1.1"));
         Assertions.assertNotNull(GITHUB.getAssetsDownloadUrls("2.1.1"));
-
-        Assertions.assertNotNull(GITLAB.latestVersion(false));
-        Assertions.assertNotNull(GITLAB.latestVersion(true));
-        Assertions.assertNotNull(GITLAB.latestAlpha());
-        Assertions.assertNotNull(GITLAB.latestBeta());
-        Assertions.assertNotNull(GITLAB.getDownloadUrl("2.1.1"));
-        Assertions.assertNotNull(GITLAB.getAssetsDownloadUrls("2.1.1"));
 
         Assertions.assertNotNull(GITGRIEFED.latestVersion(false));
         Assertions.assertNotNull(GITGRIEFED.latestVersion(true));
@@ -311,42 +279,9 @@ public class UpdateCheckerTests {
                 ).split(";")[0]);
 
 
-
-        System.out.println("Update-instance from GitLab");
-        Assertions.assertTrue(GITLAB.check("2.0.0",false).isPresent());
-        Assertions.assertFalse(GITLAB.check(latest,false).isPresent());
-        Update gitLabUpdate = GITLAB.check("2.0.0",false).get();
-        Assertions.assertEquals(gitLabUpdate.version(), latest);
-        Assertions.assertNotNull(gitLabUpdate.description());
-        Assertions.assertNotNull(gitLabUpdate.url());
-        Assertions.assertNotNull(gitLabUpdate.releaseDate());
-        Assertions.assertNotEquals(0, gitLabUpdate.assets().get().size());
-        gitLabUpdate.assets().get().forEach(asset -> {
-            Assertions.assertNotNull(asset.name());
-            Assertions.assertNotNull(asset.url());
-        });
-        Assertions.assertTrue(gitLabUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".exe").isPresent());
-        Assertions.assertTrue(gitLabUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".jar").isPresent());
-        Assertions.assertNotEquals(0, gitLabUpdate.sources().size());
-        gitLabUpdate.sources().forEach(source -> {
-            Assertions.assertNotNull(source.type());
-            Assertions.assertNotNull(source.url());
-        });
-        Assertions.assertNotNull(gitLabUpdate.sourceZip());
-        Assertions.assertSame(gitLabUpdate.sourceZip().type(), ArchiveType.ZIP);
-        Assertions.assertNotNull(gitLabUpdate.sourceTarGz());
-        Assertions.assertSame(gitLabUpdate.sourceTarGz().type(), ArchiveType.TAR_GZ);
-        Assertions.assertTrue(gitLabUpdate.sourceTar().isPresent());
-        Assertions.assertSame(gitLabUpdate.sourceTar().get().type(), ArchiveType.TAR);
-        Assertions.assertTrue(gitLabUpdate.sourceTarBz2().isPresent());
-        Assertions.assertSame(gitLabUpdate.sourceTarBz2().get().type(), ArchiveType.TAR_BZ2);
-
-
-
-
         System.out.println("Update-instance from GitHub");
-        Assertions.assertTrue(GITLAB.check("2.0.0",false).isPresent());
-        Assertions.assertFalse(GITLAB.check(latest,false).isPresent());
+        Assertions.assertTrue(GITHUB.check("2.0.0",false).isPresent());
+        Assertions.assertFalse(GITHUB.check(latest,false).isPresent());
         Update gitHubUpdate = GITHUB.check("2.0.0",false).get();
         Assertions.assertEquals(gitHubUpdate.version(), latest);
         Assertions.assertNotNull(gitHubUpdate.description());
@@ -398,22 +333,6 @@ public class UpdateCheckerTests {
                 // Don't check for pre-releases.
             } else if (updater.contains(";") && GITGRIEFED.checkForUpdate(updater.split(";")[0], pre).contains(";")) {
                 updater = GITGRIEFED.checkForUpdate(updater.split(";")[0], pre);
-            }
-        }
-
-
-        if (GITLAB != null && updater != null) {
-
-            // After checking GitGriefed, and we did not get a version, check GitLab.
-            // Check GitLab for new versions which are not pre-releases. Run with true to check pre-releases as well.
-            // Only check if we did not already get a version from prior checks.
-            if (!updater.contains(";") && GITLAB.checkForUpdate(version, pre).contains(";")) {
-                updater = GITLAB.checkForUpdate(version, pre);
-
-                // Check GitLab for a newer version, with the version we received from GitGriefed, if we received a new version from GitGriefed.
-                // Don't check for pre-releases.
-            } else if (updater.contains(";") && GITLAB.checkForUpdate(updater.split(";")[0], pre).contains(";")) {
-                updater = GITLAB.checkForUpdate(updater.split(";")[0], pre);
             }
         }
 
