@@ -1,3 +1,46 @@
+## [1.1.1](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.0...1.1.1) (2022-11-30)
+
+
+### 🦊 CI/CD
+
+* Update dependencies. ([120bbfc](https://git.griefed.de/Griefed/VersionChecker/commit/120bbfc8c5af878f5aa74a737f412533c8d7d502))
+* **GitLab:** Fix coverage job ([852c034](https://git.griefed.de/Griefed/VersionChecker/commit/852c034227e8df673744d05ef191d57316713250))
+
+
+### 🧪 Tests
+
+* Remove GitLab from tests as it no longer has the most recent SPC releases available due to CI limitations ([ffffe91](https://git.griefed.de/Griefed/VersionChecker/commit/ffffe913d621de13bad1105762adc18da1ad77ee))
+
+
+### Other
+
+* **deps:** update actions/checkout action to v3 ([67290b9](https://git.griefed.de/Griefed/VersionChecker/commit/67290b9d6360cfcbd02162a4ff0c3695efec76a8))
+* **deps:** update actions/upload-artifact action to v3 ([99f8629](https://git.griefed.de/Griefed/VersionChecker/commit/99f862905c9cc756e1643cc26b8b06f1405603d0))
+* **deps:** update dependency com.fasterxml.jackson.core:jackson-databind to v2.13.3 ([08eec64](https://git.griefed.de/Griefed/VersionChecker/commit/08eec6405034edf6facbfdca7f2799af251e5105))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.10 ([e261fc7](https://git.griefed.de/Griefed/VersionChecker/commit/e261fc7f5f40805a3060dcd3380ecdfc7f73f86a))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.11 ([41966b6](https://git.griefed.de/Griefed/VersionChecker/commit/41966b6b7c8a23b2191acb3a73eedf1d8670f164))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.12 ([1e03db2](https://git.griefed.de/Griefed/VersionChecker/commit/1e03db2d557a1e9c21169c8c551402e34622ad80))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.13 ([0530135](https://git.griefed.de/Griefed/VersionChecker/commit/0530135431d9e4ccf4331375bdfcd3e78a2ddd4a))
+* **deps:** update dependency ghcr.io/griefed/baseimage-ubuntu-jdk-8 to v2.0.9 ([efd6b7c](https://git.griefed.de/Griefed/VersionChecker/commit/efd6b7c45adb295191c016ed9cee51ad33238838))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.6 ([8101ad3](https://git.griefed.de/Griefed/VersionChecker/commit/8101ad35f7e1af2f62c7d5f7278d96c87da03e0e))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.8 ([986cc62](https://git.griefed.de/Griefed/VersionChecker/commit/986cc62625563f53b5cb2c02000bb018df080932))
+* **deps:** update dependency ghcr.io/griefed/gitlab-ci-cd to v2.0.9 ([73a7850](https://git.griefed.de/Griefed/VersionChecker/commit/73a7850b5d66aa10fecb762436500696d345993d))
+* **deps:** update dependency griefed/baseimage-ubuntu-jdk-8 to v2.0.11 ([aacd861](https://git.griefed.de/Griefed/VersionChecker/commit/aacd8614856890c58bba95e7cffd5566edb81cfa))
+* **deps:** update dependency griefed/baseimage-ubuntu-jdk-8 to v2.0.12 ([8b0d475](https://git.griefed.de/Griefed/VersionChecker/commit/8b0d4756df8824e9b1e994169d24f8ac70d0e2b2))
+* **deps:** update dependency griefed/baseimage-ubuntu-jdk-8 to v2.0.13 ([fe7b8a0](https://git.griefed.de/Griefed/VersionChecker/commit/fe7b8a0ec9eba59e91f4bf5b9b22444e48442be8))
+* **deps:** update dependency griefed/baseimage-ubuntu-jdk-8 to v2.0.9 ([80b6235](https://git.griefed.de/Griefed/VersionChecker/commit/80b623504e631e0a8058272d9d6cb06a919761b5))
+* **deps:** update dependency griefed/gitlab-ci-cd to v2.0.6 ([e509daf](https://git.griefed.de/Griefed/VersionChecker/commit/e509daff6aeb8350d6494642779cefbed0341e8a))
+* **deps:** update dependency griefed/gitlab-ci-cd to v2.0.8 ([9f0abb5](https://git.griefed.de/Griefed/VersionChecker/commit/9f0abb5c456c5293cd276979ac23d4f5c23aaf40))
+* **deps:** update dependency griefed/gitlab-ci-cd to v2.0.9 ([d5e4a9c](https://git.griefed.de/Griefed/VersionChecker/commit/d5e4a9c677b535c4144f738a199fae1456f91610))
+* **deps:** update dependency org.apache.logging.log4j:log4j-core to v2.17.2 ([d3cf5fb](https://git.griefed.de/Griefed/VersionChecker/commit/d3cf5fbf78ed0503e4621720616f4f07f84d5fe0))
+* **deps:** update dependency org.apache.logging.log4j:log4j-core to v2.18.0 ([fd31b19](https://git.griefed.de/Griefed/VersionChecker/commit/fd31b196cc5cb8556a4853d2e29c0dbc5b4ad544))
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.14 ([6961c54](https://git.griefed.de/Griefed/VersionChecker/commit/6961c541ed423a8831c61c951beba586ae8c8d29))
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.15 ([69cdc7b](https://git.griefed.de/Griefed/VersionChecker/commit/69cdc7b96ccee05ef1cb259a58318b75246544de))
+* **deps:** update griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.14 ([325e8cf](https://git.griefed.de/Griefed/VersionChecker/commit/325e8cf186744609e2442112625a27c0ae84e52f))
+* **deps:** update griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.15 ([d0f4783](https://git.griefed.de/Griefed/VersionChecker/commit/d0f47831498a1e65cff5fbdeb1a43d8c903377c4))
+* **deps:** update jamesives/github-pages-deploy-action action to v4.3.3 ([bcf16a5](https://git.griefed.de/Griefed/VersionChecker/commit/bcf16a5716779d3685d4a0fa66ee750574fdaf6f))
+* **deps:** update jamesives/github-pages-deploy-action action to v4.3.4 ([2719fbf](https://git.griefed.de/Griefed/VersionChecker/commit/2719fbf2c557f1ea291acd678d0fbb85cab76ebd))
+
 ## [1.1.0](https://git.griefed.de/Griefed/VersionChecker/compare/1.0.8...1.1.0) (2022-04-17)
 
 
