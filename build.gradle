@@ -7,6 +7,7 @@ plugins {
     id 'java-library'
     id 'signing'
     id 'maven-publish'
+    id "io.github.gradle-nexus.publish-plugin" version "1.1.0"
 
     id 'jacoco'
     id 'idea'
@@ -104,6 +105,17 @@ jar {
     }
 }
 
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = System.getenv("OSSRH_USERNAME")
+            password = System.getenv("OSSRH_PASSWORD")
+        }
+    }
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -142,7 +154,6 @@ publishing {
             }
         }
     }
-
     repositories {
         maven {
             name = "GitHubPackages"
@@ -170,14 +181,6 @@ publishing {
             }
             authentication {
                 header(HttpHeaderAuthentication)
-            }
-        }
-        maven {
-            name = "OSSRH"
-            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = System.getenv("OSSRH_USERNAME")
-                password = System.getenv("OSSRH_PASSWORD")
             }
         }
     }

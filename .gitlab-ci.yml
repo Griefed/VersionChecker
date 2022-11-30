@@ -114,9 +114,13 @@ Build Release:
     - if: "$CI_COMMIT_TAG =~ /^\\d+\\.\\d+\\.\\d+(-beta|-alpha)\\.\\d+$/"
     - if: "$CI_COMMIT_TAG =~ /^\\d+\\.\\d+\\.\\d+$/"
 
-Publish Maven Artifacts:
+Sign Java Publication:
   stage: Build Release
   image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.15
+  needs:
+    - job: Build Release
+      artifacts: false
+      optional: false
   before_script:
     - echo "**** Running in $CI_JOB_ID ****"
     - echo "**** Java location ****"
@@ -125,14 +129,108 @@ Publish Maven Artifacts:
     - java -version
     - echo "**** Allowing execution of gradlew ****"
     - chmod +x gradlew
-    - echo "**** Ensure clean environment ****"
-    - "./gradlew clean"
   script:
     - echo "**** Publishing Maven Artifacts ****"
-    - "./gradlew publish -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+    - "./gradlew signMavenJavaPublication -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
   rules:
-    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-beta\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+  cache:
+    - key:
+        files:
+          - build.gradle
+          - gradle/gradle-wrapper.properties
+      paths:
+        - .gradle
+      policy: pull
+
+Publish GitHub:
+  stage: Build Release
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.15
+  needs:
+    - job: Sign Java Publication
+      optional: false
+      artifacts: true
+  script:
+    - echo "**** Publishing Maven Artifacts to GitHub ****"
+    - "./gradlew publishMavenJavaPublicationToGitHubPackagesRepository -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-beta\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+  cache:
+    - key:
+        files:
+          - build.gradle
+          - gradle/gradle-wrapper.properties
+      paths:
+        - .gradle
+      policy: pull
+
+Publish GitLab:
+  stage: Build Release
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.15
+  needs:
+    - job: Sign Java Publication
+      optional: false
+      artifacts: true
+  script:
+    - echo "**** Publishing Maven Artifacts to GitLab ****"
+    - "./gradlew publishMavenJavaPublicationToMaven2Repository -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-beta\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+  cache:
+    - key:
+        files:
+          - build.gradle
+          - gradle/gradle-wrapper.properties
+      paths:
+        - .gradle
+      policy: pull
+
+Publish GitGriefed:
+  stage: Build Release
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.15
+  needs:
+    - job: Sign Java Publication
+      optional: false
+      artifacts: true
+  script:
+    - echo "**** Publishing Maven Artifacts GitGriefed ****"
+    - "./gradlew publishMavenJavaPublicationToMavenRepository -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-beta\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+  cache:
+    - key:
+        files:
+          - build.gradle
+          - gradle/gradle-wrapper.properties
+      paths:
+        - .gradle
+      policy: pull
+
+Publish OSSRH:
+  stage: Build Release
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.15
+  needs:
+    - job: Sign Java Publication
+      optional: false
+      artifacts: true
+  script:
+    - echo "**** Publishing Maven Artifacts to OSSRH ****"
+    - "./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Pversion=${CI_COMMIT_TAG} -x test --info --stacktrace"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-beta\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
+  cache:
+    - key:
+        files:
+          - build.gradle
+          - gradle/gradle-wrapper.properties
+      paths:
+        - .gradle
+      policy: pull
 
 #Inform About Release:
 #  stage: Build Release
