@@ -1,3 +1,16 @@
+## [1.1.2](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.1...1.1.2) (2022-11-30)
+
+
+### 🦊 CI/CD
+
+* Disable release notification. Disable unneeded analyzers. Update gitlab-ci-cd image version. Only run jobs when necessary. ([58c658f](https://git.griefed.de/Griefed/VersionChecker/commit/58c658f60dafe85cccb378579e77a3a856fbb948))
+
+
+### 🛠 Fixes
+
+* Clean YAML errors and orphan job dependency ([b569594](https://git.griefed.de/Griefed/VersionChecker/commit/b569594ff08bb006307fd474360bf9f6478341d9))
+* Switch to per-maven configuration and introduce io.github.gradle-nexus.publish-plugin ([00ad66d](https://git.griefed.de/Griefed/VersionChecker/commit/00ad66d5b448beccbdf4b2727f66c8574e1ed17f))
+
 ## [1.1.1](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.0...1.1.1) (2022-11-30)
 
 
