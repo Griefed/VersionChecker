@@ -1,3 +1,10 @@
+## [1.1.3](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.2...1.1.3) (2022-11-30)
+
+
+### 🛠 Fixes
+
+* Sigh.....allow execution of the gradlew script. Why must things be this way. :'-( ([b959ecc](https://git.griefed.de/Griefed/VersionChecker/commit/b959ecccc66de8d7dc1c76c2c1dc307a896cd934))
+
 ## [1.1.2](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.1...1.1.2) (2022-11-30)
 
 
