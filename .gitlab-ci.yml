@@ -16,7 +16,7 @@ variables:
   SECRET_DETECTION_EXCLUDED_PATHS: ""
 
 services:
-  - name: griefed/gitlab-ci-cd:2.0.9
+  - name: griefed/gitlab-ci-cd:2.2.1
     alias: docker
 
 workflow:
@@ -25,56 +25,9 @@ workflow:
       when: never
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
-    - when: always
-
-sast:
-  stage: Tests
-  artifacts:
-    reports:
-      sast: gl-sast-report.json
-  rules:
-    - when: never
-  variables:
-    SEARCH_MAX_DEPTH: 4
-  script:
-    - echo "$CI_JOB_NAME is used for configuration only, and its script should not be executed"
-    - exit 1
-
-.sast-analyzer:
-  stage: Tests
-  extends: sast
-  allow_failure: true
-  # `rules` must be overridden explicitly by each child job
-  # see https://gitlab.com/gitlab-org/gitlab/-/issues/218444
-  script:
-    - /analyzer run
-
-.secret-analyzer:
-  stage: Tests
-  image: "$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION"
-  services: []
-  allow_failure: true
-  # `rules` must be overridden explicitly by each child job
-  # see https://gitlab.com/gitlab-org/gitlab/-/issues/218444
-  artifacts:
-    reports:
-      secret_detection: gl-secret-detection-report.json
-
-secret_detection:
-  stage: Tests
-  extends: .secret-analyzer
-  rules:
-    - if: $SECRET_DETECTION_DISABLED
+    - if: '$CI_COMMIT_TITLE =~ /^RELEASE:.+$/ && $CI_COMMIT_BRANCH' # && $CI_COMMIT_TAG == null
       when: never
-    - if: $CI_COMMIT_BRANCH
-  script:
-    - if [ -n "$CI_COMMIT_TAG" ]; then echo "Skipping Secret Detection for tags. No code changes have occurred."; exit 0; fi
-    - if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then echo "Running Secret Detection on default branch."; /analyzer run; exit 0; fi
-    - git fetch origin $CI_DEFAULT_BRANCH $CI_COMMIT_REF_NAME
-    - git log --left-right --cherry-pick --pretty=format:"%H" refs/remotes/origin/$CI_DEFAULT_BRANCH...refs/remotes/origin/$CI_COMMIT_REF_NAME > "$CI_COMMIT_SHA"_commit_list.txt
-    - export SECRET_DETECTION_COMMITS_FILE="$CI_COMMIT_SHA"_commit_list.txt
-    - /analyzer run
-    - rm "$CI_COMMIT_SHA"_commit_list.txt
+    - when: always
 
 Gradle Test:
   stage: Tests
@@ -113,7 +66,7 @@ Generate Release:
       artifacts: false
     - job: secret_detection
       artifacts: false
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.9
+  image: ghcr.io/griefed/gitlab-ci-cd:2.2.1
   script:
     - npx semantic-release
   rules:
@@ -181,33 +134,33 @@ Publish Maven Artifacts:
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
     - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/ && $CI_SERVER_HOST == "git.griefed.de"'
 
-Inform About Release:
-  stage: Build Release
-  image: ghcr.io/griefed/gitlab-ci-cd:2.0.9
-  needs:
-    - job: Build Release
-      artifacts: false
-  script:
-    - /discord.sh
-      --webhook-url="$WEBHOOK_URL"
-      --username "$CI_PROJECT_TITLE"
-      --avatar "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.png"
-      --text "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at <${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}>"
-      --title "New ${CI_PROJECT_TITLE} Release"
-      --description "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at ${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
-      --color "0xC0FFEE"
-      --url "${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
-      --author "Griefed"
-      --author-url "https://${CI_SERVER_HOST}/Griefed"
-      --author-icon "https://i.griefed.de/images/2022/01/21/sam_1500x1500.th.jpg"
-      --thumbnail "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.th.png"
-      --field "Author;[Griefed](https://${CI_SERVER_HOST}/Griefed)"
-      --field "Platform;[${CI_SERVER_HOST}](https://${CI_SERVER_HOST})"
-      --footer "Released at $CI_JOB_STARTED_AT"
-      --footer-icon "https://i.griefed.de/images/2022/01/21/start_generation.png"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/'
-    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
+#Inform About Release:
+#  stage: Build Release
+#  image: ghcr.io/griefed/gitlab-ci-cd:2.0.9
+#  needs:
+#    - job: Build Release
+#      artifacts: false
+#  script:
+#    - /discord.sh
+#      --webhook-url="$WEBHOOK_URL"
+#      --username "$CI_PROJECT_TITLE"
+#      --avatar "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.png"
+#      --text "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at <${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}>"
+#      --title "New ${CI_PROJECT_TITLE} Release"
+#      --description "There's been a new release for ${CI_PROJECT_TITLE}. The new version is ${CI_COMMIT_TAG} and is available at ${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
+#      --color "0xC0FFEE"
+#      --url "${CI_PROJECT_URL}/-/releases/${CI_COMMIT_TAG}"
+#      --author "Griefed"
+#      --author-url "https://${CI_SERVER_HOST}/Griefed"
+#      --author-icon "https://i.griefed.de/images/2022/01/21/sam_1500x1500.th.jpg"
+#      --thumbnail "https://i.griefed.de/images/2020/11/18/Prosper_Docker_300x300.th.png"
+#      --field "Author;[Griefed](https://${CI_SERVER_HOST}/Griefed)"
+#      --field "Platform;[${CI_SERVER_HOST}](https://${CI_SERVER_HOST})"
+#      --footer "Released at $CI_JOB_STARTED_AT"
+#      --footer-icon "https://i.griefed.de/images/2022/01/21/start_generation.png"
+#  rules:
+#    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+-(alpha|beta)\.\d+$/'
+#    - if: '$CI_COMMIT_TAG =~ /^\d+\.\d+\.\d+$/'
 
 release_job:
   stage: Release
