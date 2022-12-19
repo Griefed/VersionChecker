@@ -1,3 +1,21 @@
+## [1.1.4](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.3...1.1.4) (2022-12-19)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.core:jackson-databind to v2.14.1 ([a1b1afc](https://git.griefed.de/Griefed/VersionChecker/commit/a1b1afc355029b70f8dd573ee388240adb150ea7))
+* **deps:** update junit5 monorepo ([bebd7be](https://git.griefed.de/Griefed/VersionChecker/commit/bebd7be9891dcb92eb2ff7bb13cee99107061581))
+
+
+### Other
+
+* **deps:** update dependency gradle to v7.6 ([b21dc53](https://git.griefed.de/Griefed/VersionChecker/commit/b21dc53af4fad5c2a0a0e4f496112481a7ebf327))
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.16 ([948ed6c](https://git.griefed.de/Griefed/VersionChecker/commit/948ed6ca0e3c67cc8c7366802e53b824cb50b8a6))
+* **deps:** update ghcr.io/griefed/gitlab-ci-cd docker tag to v2.2.4 ([f4bda55](https://git.griefed.de/Griefed/VersionChecker/commit/f4bda55b74347122aacd7fa29c62effd66851efb))
+* **deps:** update griefed/gitlab-ci-cd docker tag to v2.2.4 ([ea0e69d](https://git.griefed.de/Griefed/VersionChecker/commit/ea0e69d92b7cff09e4919c79727eb5921414072d))
+* **deps:** update jamesives/github-pages-deploy-action action to v4.4.1 ([7ab2d0e](https://git.griefed.de/Griefed/VersionChecker/commit/7ab2d0e44a3989d2cc2ebf8b01ef11e7e1852857))
+* **deps:** update registry.gitlab.com/haynes/jacoco2cobertura docker tag to v1.0.9 ([384f5ac](https://git.griefed.de/Griefed/VersionChecker/commit/384f5ac678dcb5ed1a050f4343367ab394b479e5))
+
 ## [1.1.3](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.2...1.1.3) (2022-11-30)
 
 
