@@ -97,7 +97,7 @@ Build Release:
 
 Sign Java Publication:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.16
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.17
   needs:
     - job: Build Release
       artifacts: false
@@ -121,7 +121,7 @@ Sign Java Publication:
 
 Publish GitHub:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.16
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.17
   needs:
     - job: Sign Java Publication
       optional: false
@@ -145,7 +145,7 @@ Publish GitHub:
 
 Publish GitLab:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.16
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.17
   needs:
     - job: Sign Java Publication
       optional: false
@@ -169,7 +169,7 @@ Publish GitLab:
 
 Publish GitGriefed:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.16
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.17
   needs:
     - job: Sign Java Publication
       optional: false
@@ -193,7 +193,7 @@ Publish GitGriefed:
 
 Publish OSSRH:
   stage: Build Release
-  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.16
+  image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.17
   needs:
     - job: Sign Java Publication
       optional: false
