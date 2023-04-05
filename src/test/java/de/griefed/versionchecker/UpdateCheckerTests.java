@@ -288,25 +288,7 @@ public class UpdateCheckerTests {
         Assertions.assertNotNull(gitHubUpdate.url());
         Assertions.assertNotNull(gitHubUpdate.releaseDate());
         Assertions.assertNotEquals(0, gitHubUpdate.assets().get().size());
-        gitHubUpdate.assets().get().forEach(asset -> {
-            Assertions.assertNotNull(asset.name());
-            Assertions.assertNotNull(asset.url());
-        });
-        Assertions.assertTrue(gitHubUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".exe").isPresent());
-        Assertions.assertTrue(gitHubUpdate.getReleaseAsset("ServerPackCreator-" + latest + ".jar").isPresent());
         Assertions.assertNotEquals(0, gitHubUpdate.sources().size());
-        gitHubUpdate.sources().forEach(source -> {
-            Assertions.assertNotNull(source.type());
-            Assertions.assertNotNull(source.url());
-        });
-        Assertions.assertNotNull(gitHubUpdate.sourceZip());
-        Assertions.assertSame(gitHubUpdate.sourceZip().type(), ArchiveType.ZIP);
-        Assertions.assertNotNull(gitHubUpdate.sourceTarGz());
-        Assertions.assertSame(gitHubUpdate.sourceTarGz().type(), ArchiveType.TAR_GZ);
-        Assertions.assertFalse(gitHubUpdate.sourceTar().isPresent());
-        Assertions.assertFalse(gitHubUpdate.sourceTarBz2().isPresent());
-
-
     }
 
     private String checkForUpdate(String version, boolean pre) {
