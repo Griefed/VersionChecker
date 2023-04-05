@@ -1,3 +1,21 @@
+## [1.1.5](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.4...1.1.5) (2023-04-05)
+
+
+### 🛠 Fixes
+
+* Remove check for specific release assets. ([659a4d9](https://git.griefed.de/Griefed/VersionChecker/commit/659a4d9cb9b6bf753b3e474b876f92976a2ed6c5))
+* **deps:** update dependency com.fasterxml.jackson.core:jackson-databind to v2.14.2 ([2db8a28](https://git.griefed.de/Griefed/VersionChecker/commit/2db8a28e3c11c1f098f6822436db47bbacca4d7a))
+* **deps:** update dependency jacoco to v0.8.9 ([106acfb](https://git.griefed.de/Griefed/VersionChecker/commit/106acfbb6515202edee0037c80f4ed3e692bdbf1))
+
+
+### Other
+
+* **deps:** update dependency gradle to v7.6.1 ([e8851bd](https://git.griefed.de/Griefed/VersionChecker/commit/e8851bde850abe743a2fb13b03c5daaef5c65e46))
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.18 ([a84248a](https://git.griefed.de/Griefed/VersionChecker/commit/a84248a58b042564d043dc877274f6cf6930fb01))
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.19 ([9ae7ee5](https://git.griefed.de/Griefed/VersionChecker/commit/9ae7ee58cff636b44722359574bd29f1e85d28c9))
+* **deps:** update ghcr.io/griefed/gitlab-ci-cd docker tag to v2.2.6 ([c1cd3cd](https://git.griefed.de/Griefed/VersionChecker/commit/c1cd3cdd87a63af54190eaabf5f964c3a685b731))
+* **deps:** update griefed/gitlab-ci-cd docker tag to v2.2.9 ([dc6c80b](https://git.griefed.de/Griefed/VersionChecker/commit/dc6c80b791efc58931533f2091f54b1945bb2d90))
+
 ## [1.1.4](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.3...1.1.4) (2022-12-19)
 
 
