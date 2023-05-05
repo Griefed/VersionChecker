@@ -1,3 +1,18 @@
+## [1.1.6](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.5...1.1.6) (2023-05-05)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency jacoco to v0.8.10 ([c5c63cd](https://git.griefed.de/Griefed/VersionChecker/commit/c5c63cdac4ef896b65267ec614089299f3c00b4e))
+* **deps:** update junit5 monorepo ([6bae9ad](https://git.griefed.de/Griefed/VersionChecker/commit/6bae9ad0c5feda9e5d2d0fc745e0f3d069c475f2))
+
+
+### Other
+
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.20 ([0615757](https://git.griefed.de/Griefed/VersionChecker/commit/0615757259aa1f74f0bda6973d5eb5b74350d9f2))
+* **deps:** update ghcr.io/griefed/gitlab-ci-cd docker tag to v2.2.10 ([9829dcb](https://git.griefed.de/Griefed/VersionChecker/commit/9829dcb7a9b0be64d96222e1274da23336d36bca))
+* **deps:** update griefed/gitlab-ci-cd docker tag to v2.2.10 ([5ac5f65](https://git.griefed.de/Griefed/VersionChecker/commit/5ac5f65ca785438c655ff48f174d94cce6c8886b))
+
 ## [1.1.5](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.4...1.1.5) (2023-04-05)
 
 
