@@ -1,3 +1,16 @@
+## [1.1.7](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.6...1.1.7) (2023-05-05)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency org.apache.logging.log4j:log4j-core to v2.20.0 ([4ac1a9b](https://git.griefed.de/Griefed/VersionChecker/commit/4ac1a9bba1467087bc62159fb8ae15b0c945e3a3))
+* **deps:** update dependency org.jetbrains:annotations to v24 ([68bb5eb](https://git.griefed.de/Griefed/VersionChecker/commit/68bb5eb89221ff35840b08a72746e7f91f6bb9c4))
+
+
+### Other
+
+* **deps:** update dependency gradle to v8 ([6e4bbd4](https://git.griefed.de/Griefed/VersionChecker/commit/6e4bbd49ee67b5274cecda8481715e5a9b37c0c8))
+
 ## [1.1.6](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.5...1.1.6) (2023-05-05)
 
 
