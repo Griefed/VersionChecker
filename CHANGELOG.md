@@ -1,3 +1,31 @@
+## [1.1.7](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.6...1.1.7) (2023-05-05)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency org.apache.logging.log4j:log4j-core to v2.20.0 ([4ac1a9b](https://git.griefed.de/Griefed/VersionChecker/commit/4ac1a9bba1467087bc62159fb8ae15b0c945e3a3))
+* **deps:** update dependency org.jetbrains:annotations to v24 ([68bb5eb](https://git.griefed.de/Griefed/VersionChecker/commit/68bb5eb89221ff35840b08a72746e7f91f6bb9c4))
+
+
+### Other
+
+* **deps:** update dependency gradle to v8 ([6e4bbd4](https://git.griefed.de/Griefed/VersionChecker/commit/6e4bbd49ee67b5274cecda8481715e5a9b37c0c8))
+
+## [1.1.6](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.5...1.1.6) (2023-05-05)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency jacoco to v0.8.10 ([c5c63cd](https://git.griefed.de/Griefed/VersionChecker/commit/c5c63cdac4ef896b65267ec614089299f3c00b4e))
+* **deps:** update junit5 monorepo ([6bae9ad](https://git.griefed.de/Griefed/VersionChecker/commit/6bae9ad0c5feda9e5d2d0fc745e0f3d069c475f2))
+
+
+### Other
+
+* **deps:** update ghcr.io/griefed/baseimage-ubuntu-jdk-8 docker tag to v2.0.20 ([0615757](https://git.griefed.de/Griefed/VersionChecker/commit/0615757259aa1f74f0bda6973d5eb5b74350d9f2))
+* **deps:** update ghcr.io/griefed/gitlab-ci-cd docker tag to v2.2.10 ([9829dcb](https://git.griefed.de/Griefed/VersionChecker/commit/9829dcb7a9b0be64d96222e1274da23336d36bca))
+* **deps:** update griefed/gitlab-ci-cd docker tag to v2.2.10 ([5ac5f65](https://git.griefed.de/Griefed/VersionChecker/commit/5ac5f65ca785438c655ff48f174d94cce6c8886b))
+
 ## [1.1.5](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.4...1.1.5) (2023-04-05)
 
 
