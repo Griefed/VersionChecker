@@ -1,3 +1,10 @@
+## [1.1.8](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.7...1.1.8) (2023-05-06)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency org.jetbrains:annotations to v23.1.0 ([9b2ea2e](https://git.griefed.de/Griefed/VersionChecker/commit/9b2ea2e160b5bdee514fb9767c13e4d37e25f774))
+
 ## [1.1.7](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.6...1.1.7) (2023-05-05)
 
 
