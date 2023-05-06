@@ -1,3 +1,15 @@
+## [1.1.9](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.8...1.1.9) (2023-05-06)
+
+
+### 🛠 Fixes
+
+* **deps:** update dependency com.fasterxml.jackson.core:jackson-databind to v2.15.0 ([82d626c](https://git.griefed.de/Griefed/VersionChecker/commit/82d626c08a445088450a233ed87e04bb30049047))
+
+
+### Other
+
+* **deps:** update plugin io.github.gradle-nexus.publish-plugin to v1.3.0 ([4600f85](https://git.griefed.de/Griefed/VersionChecker/commit/4600f8541704997ea94ff050e56263f50b3b55d9))
+
 ## [1.1.8](https://git.griefed.de/Griefed/VersionChecker/compare/1.1.7...1.1.8) (2023-05-06)
 
 
