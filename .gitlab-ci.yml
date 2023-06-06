@@ -15,7 +15,7 @@ variables:
   SECRETS_ANALYZER_VERSION: "3"
   SECRET_DETECTION_EXCLUDED_PATHS: ""
 
-image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.20
+image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.21
 
 services:
   - name: griefed/gitlab-ci-cd:2.2.11
