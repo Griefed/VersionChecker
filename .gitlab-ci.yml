@@ -57,7 +57,7 @@ Generate Release:
   needs:
     - job: Gradle Test
       artifacts: false
-  image: ghcr.io/griefed/gitlab-ci-cd:2.2.10
+  image: ghcr.io/griefed/gitlab-ci-cd:2.2.11
   script:
     - npx semantic-release
   rules:
