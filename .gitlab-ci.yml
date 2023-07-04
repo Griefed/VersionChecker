@@ -18,7 +18,7 @@ variables:
 image: ghcr.io/griefed/baseimage-ubuntu-jdk-8:2.0.22
 
 services:
-  - name: griefed/gitlab-ci-cd:2.2.11
+  - name: griefed/gitlab-ci-cd:2.2.12
     alias: docker
 
 workflow:
