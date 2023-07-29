@@ -15,10 +15,10 @@ variables:
   SECRETS_ANALYZER_VERSION: "3"
   SECRET_DETECTION_EXCLUDED_PATHS: ""
 
-image: docker.griefed.dev/griefed/baseimage-ubuntu-jdk-8:2.0.19
+image: docker.griefed.dev/griefed/baseimage-ubuntu-jdk-8:2.0.22
 
 services:
-  - name: docker.griefed.dev/griefed/gitlab-ci-cd:2.2.9
+  - name: docker.griefed.dev/griefed/gitlab-ci-cd:2.2.12
     alias: docker
 
 workflow:
@@ -57,7 +57,7 @@ Generate Release:
   needs:
     - job: Gradle Test
       artifacts: false
-  image: docker.griefed.dev/griefed/gitlab-ci-cd:2.2.9
+  image: docker.griefed.dev/griefed/gitlab-ci-cd:2.2.12
   script:
     - npx semantic-release
   rules:
