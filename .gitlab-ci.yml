@@ -15,7 +15,7 @@ variables:
   SECRETS_ANALYZER_VERSION: "3"
   SECRET_DETECTION_EXCLUDED_PATHS: ""
 
-image: docker.griefed.dev/griefed/baseimage-ubuntu-jdk-8:2.0.22
+image: docker.griefed.dev/griefed/baseimage-ubuntu-jdk-8:2.0.23
 
 services:
   - name: docker.griefed.dev/griefed/gitlab-ci-cd:2.2.12
